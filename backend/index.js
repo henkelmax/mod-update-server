@@ -78,6 +78,7 @@ const Joi = require("joi");
 
   const db = client.db(dbName);
 
+  // Get a specific mod
   app.get("/mods/:modID", async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
     if (modIDElement.error) {
@@ -92,6 +93,7 @@ const Joi = require("joi");
     res.status(200).send(mod);
   });
 
+  // Get all mods
   app.get("/mods", async (req, res) => {
     res.status(200).send(
       await db
@@ -101,6 +103,7 @@ const Joi = require("joi");
     );
   });
 
+  // Get a specific update for a mod
   app.get("/updates/:modID/:updateID", async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
     if (modIDElement.error) {
@@ -144,6 +147,7 @@ const Joi = require("joi");
     res.status(200).send(update);
   });
 
+  // Get the updates for a mod
   app.get("/updates/:modID", async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
     if (modIDElement.error) {
@@ -176,7 +180,7 @@ const Joi = require("joi");
     res.status(200).send(updates);
   });
 
-  // Add update
+  // Add an update
   app.post("/updates/:modID", async (req, res) => {
     const element = updateSchema.validate(req.body);
     if (element.error) {
@@ -263,7 +267,7 @@ const Joi = require("joi");
     res.status(200).end();
   });
 
-  // Add mod
+  // Add a mod
   app.post("/add", async (req, res) => {
     const element = modSchema.validate(req.body);
     if (element.error) {
@@ -303,25 +307,50 @@ const Joi = require("joi");
     }
 
     let mod = await modCursor.next();
-/*
-    let updates = await db
-      .collection("updates")
-      .aggregate([
-        {
-          $lookup: {
-            from: "products",
-            localField: "product_id",
-            foreignField: "_id",
-            as: "orderdetails"
-          }
-        }
-      ])
-      .toArray();*/
 
     let forgeFormat = {
       homepage: mod.websiteURL,
       promos: {}
     };
+
+    let updates = await db
+      .collection("updates")
+      .aggregate([
+        {
+          $match: {
+            mod: mod._id
+          }
+        },
+        {
+          $sort: {
+            publishDate: -1
+          }
+        },
+        {
+          $project: {
+            _id: false,
+            releaseType: false,
+            mod: false,
+            publishDate: false
+          }
+        }
+      ])
+      .toArray();
+
+    updates.reverse().forEach(update => {
+      if (!forgeFormat[update.gameVersion]) {
+        forgeFormat[update.gameVersion] = {};
+      }
+      forgeFormat[update.gameVersion][
+        update.version
+      ] = update.updateMessages.join("\n");
+
+      if (update.tags.includes("recommended")) {
+        forgeFormat.promos[`${update.gameVersion}-recommended`] =
+          update.version;
+      }
+      forgeFormat.promos[`${update.gameVersion}-latest`] = update.version;
+    });
 
     res.status(200).send(forgeFormat);
   });
