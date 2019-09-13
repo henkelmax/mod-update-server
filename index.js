@@ -428,7 +428,7 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    const result = await db.collection('apiKeys').remove({ apiKey: apiKeyElement.value });
+    const result = await db.collection('apiKeys').deleteMany({ apiKey: apiKeyElement.value });
     if (result.result.n <= 0 || result.result.ok <= 0) {
       res.status(400).send({ err: 'ApiKey not found' });
       return;
