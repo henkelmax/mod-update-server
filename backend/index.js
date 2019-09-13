@@ -31,6 +31,8 @@ const Joi = require('joi');
 
   const objectIDSchema = Joi.string().regex(/[0-9a-fA-F]{24}/);
 
+  const apiKeySchema = Joi.string().regex(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+
   const modSchema = Joi.object().keys({
     modID: Joi.string()
       .min(1)
@@ -77,6 +79,16 @@ const Joi = require('joi');
   });
 
   const db = client.db(dbName);
+
+  if (!(await db.listCollections({ name: 'mods' }).hasNext())) {
+    db.createCollection('mods');
+  }
+  if (!(await db.listCollections({ name: 'updates' }).hasNext())) {
+    db.createCollection('updates');
+  }
+  if (!(await db.listCollections({ name: 'apiKeys' }).hasNext())) {
+    db.createCollection('apiKeys');
+  }
 
   // Get a specific mod
   app.get('/mods/:modID', async (req, res) => {
@@ -178,18 +190,25 @@ const Joi = require('joi');
 
   // Add an update
   app.post('/updates/:modID', async (req, res) => {
-    const element = updateSchema.validate(req.body);
-    if (element.error) {
-      res.status(400).send({ err: element.error.details });
-      res.end();
-      return;
-    }
     const modIDElement = modIDSchema.validate(req.params.modID);
     if (modIDElement.error) {
       res.status(400).send({ err: modIDElement.error.details });
       res.end();
       return;
     }
+
+    if (!(await checkAuth(req, modIDElement.value))) {
+      res.status(401).end();
+      return;
+    }
+
+    const bodyElement = updateSchema.validate(req.body);
+    if (bodyElement.error) {
+      res.status(400).send({ err: bodyElement.error.details });
+      res.end();
+      return;
+    }
+
     const modCursor = db.collection('mods').find({ modID: modIDElement.value });
     const modExists = await modCursor.hasNext();
     if (!modExists) {
@@ -197,7 +216,7 @@ const Joi = require('joi');
       return;
     }
     const result = await db.collection('updates').insertOne({
-      ...element.value,
+      ...bodyElement.value,
       mod: (await modCursor.next())._id
     });
     if (result.insertedCount !== 1) {
@@ -213,6 +232,11 @@ const Joi = require('joi');
     if (modIDElement.error) {
       res.status(400).send({ err: modIDElement.error.details });
       res.end();
+      return;
+    }
+
+    if (!(await checkAuth(req, modIDElement.value))) {
+      res.status(401).end();
       return;
     }
 
@@ -249,6 +273,11 @@ const Joi = require('joi');
       return;
     }
 
+    if (!(await checkAuth(req, modIDElement.value))) {
+      res.status(401).end();
+      return;
+    }
+
     const result = await db.collection('mods').deleteMany({ modID: modIDElement.value });
 
     if (result.deletedCount <= 0) {
@@ -261,6 +290,11 @@ const Joi = require('joi');
 
   // Add a mod
   app.post('/add', async (req, res) => {
+    if (!(await checkAuth(req))) {
+      res.status(401).end();
+      return;
+    }
+
     const element = modSchema.validate(req.body);
     if (element.error) {
       res.status(400).send({ err: element.error.details });
@@ -347,4 +381,20 @@ const Joi = require('joi');
   app.listen(port, () => {
     console.log(`Listening on port ${port}.`);
   });
+
+  async function checkAuth(req, modID = '*') {
+    const apiKeyElement = apiKeySchema.validate(req.headers.apikey);
+    if (apiKeyElement.error) {
+      return false;
+    }
+
+    const apiKeyCursor = db.collection('apiKeys').find({ apiKey: apiKeyElement.value });
+
+    if (!(await apiKeyCursor.hasNext())) {
+      return false;
+    }
+    const apiKey = await apiKeyCursor.next();
+
+    return apiKey.mods.includes('*') || apiKey.mods.includes(modID);
+  }
 })();
