@@ -5,8 +5,70 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const Joi = require('joi');
+const uuid = require('uuid/v4');
 
 const cache = apicache.middleware;
+
+const modIDSchema = Joi.string()
+  .min(1)
+  .required();
+
+const limitSchema = Joi.number()
+  .integer()
+  .min(1)
+  .max(128)
+  .default(16);
+
+const objectIDSchema = Joi.string().regex(/[0-9a-fA-F]{24}/);
+
+const apiKeySchema = Joi.string().regex(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+
+const modSchema = Joi.object().keys({
+  modID: Joi.string()
+    .min(1)
+    .required(),
+  name: Joi.string()
+    .min(1)
+    .required(),
+  description: Joi.string()
+    .min(1)
+    .required(),
+  websiteURL: Joi.string()
+    .min(1)
+    .required(),
+  downloadURL: Joi.string()
+    .min(1)
+    .required(),
+  issueURL: Joi.string()
+    .min(1)
+    .required()
+});
+
+const updateSchema = Joi.object().keys({
+  publishDate: Joi.date().iso(),
+  gameVersion: Joi.string()
+    .min(1)
+    .required(),
+  version: Joi.string()
+    .min(1)
+    .required(),
+  updateMessages: Joi.array()
+    .items(Joi.string())
+    .required(),
+  releaseType: Joi.string()
+    .valid('alpha', 'beta', 'release')
+    .default('release'),
+  tags: Joi.array()
+    .items(Joi.string())
+    .required()
+});
+
+const apiKeyModsSchema = Joi.object().keys({
+  mods: Joi.array()
+    .items(Joi.string())
+    .min(1)
+    .required()
+});
 
 (async () => {
   const app = express();
@@ -22,59 +84,7 @@ const cache = apicache.middleware;
 
   const port = Number.parseInt(process.env.PORT, 10) || 8080;
 
-  const modIDSchema = Joi.string()
-    .min(1)
-    .required();
-
-  const limitSchema = Joi.number()
-    .integer()
-    .min(1)
-    .max(128)
-    .default(16);
-
-  const objectIDSchema = Joi.string().regex(/[0-9a-fA-F]{24}/);
-
-  const apiKeySchema = Joi.string().regex(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-
-  const modSchema = Joi.object().keys({
-    modID: Joi.string()
-      .min(1)
-      .required(),
-    name: Joi.string()
-      .min(1)
-      .required(),
-    description: Joi.string()
-      .min(1)
-      .required(),
-    websiteURL: Joi.string()
-      .min(1)
-      .required(),
-    downloadURL: Joi.string()
-      .min(1)
-      .required(),
-    issueURL: Joi.string()
-      .min(1)
-      .required()
-  });
-
-  const updateSchema = Joi.object().keys({
-    publishDate: Joi.date().iso(),
-    gameVersion: Joi.string()
-      .min(1)
-      .required(),
-    version: Joi.string()
-      .min(1)
-      .required(),
-    updateMessages: Joi.array()
-      .items(Joi.string())
-      .required(),
-    releaseType: Joi.string()
-      .valid('alpha', 'beta', 'release')
-      .default('release'),
-    tags: Joi.array()
-      .items(Joi.string())
-      .required()
-  });
+  const masterKey = apiKeySchema.validate(process.env.MASTER_KEY).value;
 
   const client = await MongoClient.connect(dbUrl, {
     useNewUrlParser: true,
@@ -381,6 +391,51 @@ const cache = apicache.middleware;
     res.status(200).send(forgeFormat);
   });
 
+  // Add a new apiKey
+  app.post('/apikey/add', async (req, res) => {
+    if (!(await checkAuthMaster(req))) {
+      res.status(401).end();
+      return;
+    }
+
+    const apiKeyElement = apiKeyModsSchema.validate(req.body);
+    if (apiKeyElement.error) {
+      res.status(400).send({ err: apiKeyElement.error.details });
+      res.end();
+      return;
+    }
+
+    const apiKey = uuid();
+    const result = await db.collection('apiKeys').insert({ ...apiKeyElement.value, apiKey });
+    if (result.insertedCount !== 1) {
+      res.status(400).send({ err: 'Unknown Error' });
+      return;
+    }
+    res.status(200).send({ apiKey });
+  });
+
+  // Delete an apiKey
+  app.delete('/apikey/remove/:apiKey', async (req, res) => {
+    if (!(await checkAuthMaster(req))) {
+      res.status(401).end();
+      return;
+    }
+
+    const apiKeyElement = apiKeySchema.validate(req.params.apiKey);
+    if (apiKeyElement.error) {
+      res.status(400).send({ err: apiKeyElement.error.details });
+      res.end();
+      return;
+    }
+
+    const result = await db.collection('apiKeys').remove({ apiKey: apiKeyElement.value });
+    if (result.result.n <= 0 || result.result.ok <= 0) {
+      res.status(400).send({ err: 'ApiKey not found' });
+      return;
+    }
+    res.status(200).end();
+  });
+
   app.listen(port, () => {
     console.log(`Listening on port ${port}.`);
   });
@@ -391,6 +446,10 @@ const cache = apicache.middleware;
       return false;
     }
 
+    if (masterKey && apiKeyElement.value.toLowerCase() === masterKey) {
+      return true;
+    }
+
     const apiKeyCursor = db.collection('apiKeys').find({ apiKey: apiKeyElement.value });
 
     if (!(await apiKeyCursor.hasNext())) {
@@ -399,5 +458,14 @@ const cache = apicache.middleware;
     const apiKey = await apiKeyCursor.next();
 
     return apiKey.mods.includes('*') || apiKey.mods.includes(modID);
+  }
+
+  async function checkAuthMaster(req) {
+    const apiKeyElement = apiKeySchema.validate(req.headers.apikey);
+    if (apiKeyElement.error) {
+      return false;
+    }
+
+    return masterKey && apiKeyElement.value.toLowerCase() === masterKey;
   }
 })();

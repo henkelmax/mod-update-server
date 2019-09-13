@@ -13,6 +13,8 @@
 | `DELETE` | `/updates/MODNAME`           | Remove a mod. Requires an apikey in header.                                        |
 | `POST`   | `/add`                       | Add a new mod. Requires an apikey in header. See [Mod](#mod).                      |
 | `GET`    | `/forge/MODNAME`             | Forge update check format.                                                         |
+| `POST`   | `/apikey/add`                | Add a new apikey. See [ApiKey](#apikey).                                           |
+| `DELETE` | `/apikey/add/remove/APIKEY`  | Remove an apikey.                                                                  |
 
 ### Update
 
@@ -40,11 +42,20 @@
 }
 ```
 
+### ApiKey
+
+```js
+{
+	"mods": ["examplemod"]                                          	// The mods that this key has access to ("*" for every mod)
+}
+```
+
 ## Environment Variables
 
-| Variable  | Description                      | Default Value |
-| --------- | -------------------------------- | ------------- |
-| `DB_IP`   | The IP of the MongoDB database   | `localhost`   |
-| `DB_PORT` | The port of the MongoDB database | `27017`       |
-| `DB_NAME` | The database name                | `updates`     |
-| `PORT`    | The webserver port               | `8080`        |
+| Variable     | Description                      | Default Value |
+| ------------ | -------------------------------- | ------------- |
+| `DB_IP`      | The IP of the MongoDB database   | `localhost`   |
+| `DB_PORT`    | The port of the MongoDB database | `27017`       |
+| `DB_NAME`    | The database name                | `updates`     |
+| `PORT`       | The webserver port               | `8080`        |
+| `MASTER_KEY` | The master apiKey                |               |
