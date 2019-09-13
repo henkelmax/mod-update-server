@@ -1,9 +1,12 @@
 // @ts-check
 const express = require('express');
+const apicache = require('apicache');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const Joi = require('joi');
+
+const cache = apicache.middleware;
 
 (async () => {
   const app = express();
@@ -318,7 +321,7 @@ const Joi = require('joi');
   });
 
   // Get the forge update format
-  app.get('/forge/:modID', async (req, res) => {
+  app.get('/forge/:modID', cache('1 minute'), async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
     if (modIDElement.error) {
       res.status(400).send({ err: modIDElement.error.details });
