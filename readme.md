@@ -52,10 +52,10 @@
 
 ## Environment Variables
 
-| Variable     | Description                      | Default Value |
-| ------------ | -------------------------------- | ------------- |
-| `DB_IP`      | The IP of the MongoDB database   | `localhost`   |
-| `DB_PORT`    | The port of the MongoDB database | `27017`       |
-| `DB_NAME`    | The database name                | `updates`     |
-| `PORT`       | The webserver port               | `8080`        |
-| `MASTER_KEY` | The master apiKey                |               |
+| Variable     | Description                                                     | Default Value |
+| ------------ | --------------------------------------------------------------- | ------------- |
+| `DB_IP`      | The IP of the MongoDB database                                  | `localhost`   |
+| `DB_PORT`    | The port of the MongoDB database                                | `27017`       |
+| `DB_NAME`    | The database name                                               | `updates`     |
+| `PORT`       | The webserver port                                              | `8080`        |
+| `MASTER_KEY` | The master apiKey (e.g. `62387f34-7678-4737-bfc4-2cb600337541`) |               |
