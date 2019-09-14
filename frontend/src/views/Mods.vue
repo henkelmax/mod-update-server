@@ -12,7 +12,7 @@
             <v-list-item>
               <v-list-item-avatar>
                 <v-btn text icon color="gray" @click="addUpdate(mod.modID)">
-                  <v-icon>mdi-plus</v-icon>
+                  <v-icon>mdi-file-document-box-outline</v-icon>
                 </v-btn>
               </v-list-item-avatar>
 
@@ -36,7 +36,7 @@
         </template>
       </v-list>
     </v-card>
-    <v-dialog v-model="dialog" max-width="290">
+    <v-dialog v-model="dialog" max-width="35%">
       <v-card>
         <v-card-title class="headline">Delete {{ modToDelete.name }}</v-card-title>
         <v-card-text>Do you really want to delete this mod?</v-card-text>
@@ -72,7 +72,7 @@ export default {
       });
     },
     addUpdate(modID) {
-      // TODO update page
+      this.$router.push({ path: "updates", query: { modID: modID } });
     },
     editMod(modID) {
       this.$router.push({ path: "mod", query: { modID: modID } });

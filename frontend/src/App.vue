@@ -27,6 +27,11 @@ export default {
   name: "App",
   data: () => ({
     //
-  })
+  }),
+  created() {
+    if (!sessionStorage.apiKey && this.$route.name !== "login") {
+      this.$router.push({ path: "/" });
+    }
+  }
 };
 </script>

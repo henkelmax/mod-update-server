@@ -9,6 +9,7 @@
         label="API Key"
         type="password"
         class="ml-4 mr-4"
+        :rules="passwordRules"
         @keyup.enter="logIn()"
       ></v-text-field>
     </v-card-text>
@@ -26,7 +27,11 @@ export default {
   components: {},
   data() {
     return {
-      password: ""
+      password: "",
+      passwordRules: [
+        v => !!v || "This field is required",
+        v => /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(v) || "The API key has to be in the UUID format"
+      ]
     };
   },
   methods: {

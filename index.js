@@ -259,6 +259,50 @@ const apiKeyModsSchema = Joi.object().keys({
     res.status(200).end();
   });
 
+  // Edit an update
+  app.post('/updates/:modID/:updateID', async (req, res) => {
+    const modIDElement = modIDSchema.validate(req.params.modID);
+    if (modIDElement.error) {
+      res.status(400).send({ err: modIDElement.error.details });
+      res.end();
+      return;
+    }
+
+    if (!(await checkAuth(req, modIDElement.value))) {
+      res.status(401).end();
+      return;
+    }
+
+    const updateIDElement = objectIDSchema.validate(req.params.updateID);
+    if (updateIDElement.error) {
+      res.status(400).send({ err: updateIDElement.error.details });
+      res.end();
+      return;
+    }
+
+    const bodyElement = updateSchema.validate(req.body);
+    if (bodyElement.error) {
+      res.status(400).send({ err: bodyElement.error.details });
+      res.end();
+      return;
+    }
+
+    const modCursor = db.collection('mods').find({ modID: modIDElement.value });
+    const modExists = await modCursor.hasNext();
+    if (!modExists) {
+      res.status(400).send({ err: 'Mod does not exist' });
+      return;
+    }
+
+    const result = await db.collection('updates').updateMany({ _id: new ObjectId(updateIDElement.value) }, { $set: bodyElement.value });
+    if (result.result.n <= 0) {
+      res.status(400).send({ err: 'Update does not exist' });
+      return;
+    }
+
+    res.status(200).end();
+  });
+
   // Delete an update
   app.delete('/updates/:modID/:updateID', async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
@@ -370,17 +414,10 @@ const apiKeyModsSchema = Joi.object().keys({
       res.end();
       return;
     }
-    const exists = await db
-      .collection('mods')
-      .find({ modID: modIDElement.value })
-      .hasNext();
-    if (!exists) {
-      res.status(400).send({ err: 'Mod does not exist' });
-      return;
-    }
+
     const result = await db.collection('mods').updateMany({ modID: modIDElement.value }, { $set: element.value });
     if (result.result.n <= 0) {
-      res.status(400).send({ err: 'Unknown Error' });
+      res.status(400).send({ err: 'Mod does not exist' });
       return;
     }
     res.status(200).end();

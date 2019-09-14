@@ -24,6 +24,18 @@ export default new Router({
       name: 'mod',
       props: { modID: '' },
       component: () => import('./views/Mod.vue')
+    },
+    {
+      path: '/updates',
+      name: 'updates',
+      props: { modID: '' },
+      component: () => import('./views/Updates.vue')
+    },
+    {
+      path: '/update',
+      name: 'update',
+      props: { modID: '', updateID: '' },
+      component: () => import('./views/Update.vue')
     }
   ]
 });
