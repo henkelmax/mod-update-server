@@ -12,11 +12,12 @@
 | `GET`    | `/updates/MODNAME/UPDATE_ID` | Show update entry (updateid mcversion, version, updatemessage, tags[latest, ...]). |
 | `POST`   | `/updates/MODNAME`           | Add a new update. Requires an apikey in header. See [Update](#update).             |
 | `DELETE` | `/updates/MODNAME/UPDATE_ID` | Remove an update. Requires an apikey in header.                                    |
-| `DELETE` | `/updates/MODNAME`           | Remove a mod. Requires an apikey in header.                                        |
-| `POST`   | `/add`                       | Add a new mod. Requires an apikey in header. See [Mod](#mod).                      |
+| `DELETE` | `/mods/MODNAME`              | Remove a mod. Requires an apikey in header.                                        |
+| `POST`   | `/mods/add`                  | Add a new mod. Requires an apikey in header. See [Mod](#mod).                      |
+| `POST`   | `/mods/edit/MODNAME`         | Edit an existing mod. Requires an apikey in header. See [Mod](#mod).               |
 | `GET`    | `/forge/MODNAME`             | Forge update check format.                                                         |
 | `POST`   | `/apikey/add`                | Add a new apikey. See [ApiKey](#apikey).                                           |
-| `DELETE` | `/apikey/add/remove/APIKEY`  | Remove an apikey.                                                                  |
+| `DELETE` | `/apikey/APIKEY`  | Remove an apikey.                                                                  |
 
 ### Update
 

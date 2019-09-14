@@ -11,6 +11,7 @@ const cache = apicache.middleware;
 
 const modIDSchema = Joi.string()
   .min(1)
+  .regex(/[a-z]*/)
   .required();
 
 const limitSchema = Joi.number()
@@ -25,8 +26,27 @@ const apiKeySchema = Joi.string().regex(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-
 
 const modSchema = Joi.object().keys({
   modID: Joi.string()
+    .regex(/[a-z]*/)
     .min(1)
     .required(),
+  name: Joi.string()
+    .min(1)
+    .required(),
+  description: Joi.string()
+    .min(1)
+    .required(),
+  websiteURL: Joi.string()
+    .min(1)
+    .required(),
+  downloadURL: Joi.string()
+    .min(1)
+    .required(),
+  issueURL: Joi.string()
+    .min(1)
+    .required()
+});
+
+const modUpdateSchema = Joi.object().keys({
   name: Joi.string()
     .min(1)
     .required(),
@@ -82,7 +102,7 @@ const apiKeyModsSchema = Joi.object().keys({
   const dbUrl = `mongodb://${dbIp}:${dbPort}`;
   const dbName = process.env.DB_NAME || 'updates';
 
-  const port = Number.parseInt(process.env.PORT, 10) || 8080;
+  const port = Number.parseInt(process.env.PORT, 10) || 8081;
 
   const masterKey = apiKeySchema.validate(process.env.MASTER_KEY).value;
 
@@ -239,7 +259,7 @@ const apiKeyModsSchema = Joi.object().keys({
     res.status(200).end();
   });
 
-  // Deleta an update
+  // Delete an update
   app.delete('/updates/:modID/:updateID', async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
     if (modIDElement.error) {
@@ -277,8 +297,8 @@ const apiKeyModsSchema = Joi.object().keys({
     res.status(200).end();
   });
 
-  // Deleta a mod
-  app.delete('/updates/:modID', async (req, res) => {
+  // Delete a mod
+  app.delete('/mods/:modID', async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
     if (modIDElement.error) {
       res.status(400).send({ err: modIDElement.error.details });
@@ -302,7 +322,7 @@ const apiKeyModsSchema = Joi.object().keys({
   });
 
   // Add a mod
-  app.post('/add', async (req, res) => {
+  app.post('/mods/add', async (req, res) => {
     if (!(await checkAuth(req))) {
       res.status(401).end();
       return;
@@ -324,6 +344,42 @@ const apiKeyModsSchema = Joi.object().keys({
     }
     const result = await db.collection('mods').insertOne(element.value);
     if (result.insertedCount !== 1) {
+      res.status(400).send({ err: 'Unknown Error' });
+      return;
+    }
+    res.status(200).end();
+  });
+
+  // Edit a mod
+  app.post('/mods/edit/:modID', async (req, res) => {
+    const modIDElement = modIDSchema.validate(req.params.modID);
+    if (modIDElement.error) {
+      res.status(400).send({ err: modIDElement.error.details });
+      res.end();
+      return;
+    }
+
+    if (!(await checkAuth(req, modIDElement.value))) {
+      res.status(401).end();
+      return;
+    }
+
+    const element = modUpdateSchema.validate(req.body);
+    if (element.error) {
+      res.status(400).send({ err: element.error.details });
+      res.end();
+      return;
+    }
+    const exists = await db
+      .collection('mods')
+      .find({ modID: modIDElement.value })
+      .hasNext();
+    if (!exists) {
+      res.status(400).send({ err: 'Mod does not exist' });
+      return;
+    }
+    const result = await db.collection('mods').updateMany({ modID: modIDElement.value }, { $set: element.value });
+    if (result.result.n <= 0) {
       res.status(400).send({ err: 'Unknown Error' });
       return;
     }
@@ -415,7 +471,7 @@ const apiKeyModsSchema = Joi.object().keys({
   });
 
   // Delete an apiKey
-  app.delete('/apikey/remove/:apiKey', async (req, res) => {
+  app.delete('/apikey/:apiKey', async (req, res) => {
     if (!(await checkAuthMaster(req))) {
       res.status(401).end();
       return;

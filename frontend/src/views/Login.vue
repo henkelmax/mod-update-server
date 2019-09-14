@@ -1,0 +1,42 @@
+<template>
+  <v-card max-width="75%" class="mx-auto mt-4">
+    <v-card-title>
+      <span>Log In</span>
+    </v-card-title>
+    <v-card-text>
+      <v-text-field
+        v-model="password"
+        label="API Key"
+        type="password"
+        class="ml-4 mr-4"
+        @keyup.enter="logIn()"
+      ></v-text-field>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn class="mr-6 mb-2" @click="logIn()">Log In</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  components: {},
+  data() {
+    return {
+      password: ""
+    };
+  },
+  methods: {
+    logIn() {
+      if (this.password.trim() === "") {
+        return;
+      }
+      sessionStorage.apiKey = this.password;
+      this.$router.push("mods");
+    }
+  }
+};
+</script>
