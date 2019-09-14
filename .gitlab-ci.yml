@@ -4,6 +4,7 @@ services:
   - docker:dind
 
 stages:
+  - build-frontend
   - build-docker-image
   - release
 
@@ -13,6 +14,25 @@ variables:
 
 before_script:
   - docker login --password $DOCKER_HUB_PASSWORD --username $DOCKER_HUB_USERNAME $DOCKER_HUB_NAME
+
+build-frontend:
+  stage: build-frontend
+  image: node:alpine
+  cache:
+    paths:
+      - frontend/node_modules/
+      - frontend/.yarn
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 2 days
+  before_script:
+    - cd frontend
+    - NODE_ENV='production'
+    - yarn config set cache-folder .yarn
+    - yarn install
+  script:
+    - yarn build
 
 build-docker-image:
   stage: build-docker-image

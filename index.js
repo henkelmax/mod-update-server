@@ -6,6 +6,7 @@ const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const Joi = require('joi');
 const uuid = require('uuid/v4');
+const path = require('path');
 
 const cache = apicache.middleware;
 
@@ -122,6 +123,8 @@ const apiKeyModsSchema = Joi.object().keys({
   if (!(await db.listCollections({ name: 'apiKeys' }).hasNext())) {
     db.createCollection('apiKeys');
   }
+
+  app.use('/', express.static(path.join(__dirname, 'frontend/dist')));
 
   // Get a specific mod
   app.get('/mods/:modID', async (req, res) => {
