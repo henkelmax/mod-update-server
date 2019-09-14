@@ -1,0 +1,32 @@
+image: docker:stable
+
+services:
+  - docker:dind
+
+stages:
+  - build-docker-image
+  - release
+
+variables:
+  TAG_IMAGE_TAG: $DOCKER_HUB_NAME/$IMAGE_NAME:$CI_COMMIT_TAG
+  LATEST_IMAGE_TAG: $DOCKER_HUB_NAME/$IMAGE_NAME:latest
+
+before_script:
+  - docker login --password $DOCKER_HUB_PASSWORD --username $DOCKER_HUB_USERNAME $DOCKER_HUB_NAME
+
+build-docker-image:
+  stage: build-docker-image
+  script:
+    - docker build --pull -t $TAG_IMAGE_TAG .
+    - docker push $TAG_IMAGE_TAG
+  only:
+    - tags
+
+release:
+  stage: release
+  script:
+    - docker pull $TAG_IMAGE_TAG
+    - docker tag $TAG_IMAGE_TAG $LATEST_IMAGE_TAG
+    - docker push $LATEST_IMAGE_TAG
+  only:
+    - tags
