@@ -61,5 +61,5 @@
 | `DB_IP`      | The IP of the MongoDB database                                  | `localhost`   |
 | `DB_PORT`    | The port of the MongoDB database                                | `27017`       |
 | `DB_NAME`    | The database name                                               | `updates`     |
-| `PORT`       | The webserver port                                              | `8080`        |
+| `PORT`       | The webserver port                                              | `8088`        |
 | `MASTER_KEY` | The master apiKey (e.g. `62387f34-7678-4737-bfc4-2cb600337541`) |               |

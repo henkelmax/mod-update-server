@@ -102,7 +102,7 @@ const apiKeyModsSchema = Joi.object().keys({
   const dbUrl = `mongodb://${dbIp}:${dbPort}`;
   const dbName = process.env.DB_NAME || 'updates';
 
-  const port = Number.parseInt(process.env.PORT, 10) || 8081;
+  const port = Number.parseInt(process.env.PORT, 10) || 8088;
 
   const masterKey = apiKeySchema.validate(process.env.MASTER_KEY).value;
 

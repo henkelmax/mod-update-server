@@ -73,13 +73,13 @@ export default {
       }
 
       axios
-        .get(`http://localhost:8081/mods/${this.$route.query.modID}`)
+        .get(`${this.server}/mods/${this.$route.query.modID}`)
         .then(response => {
           this.mod = response.data;
         });
 
       axios
-        .get(`http://localhost:8081/updates/${this.$route.query.modID}`)
+        .get(`${this.server}/updates/${this.$route.query.modID}`)
         .then(response => {
           this.updates = response.data;
         });
@@ -88,7 +88,7 @@ export default {
       this.dialog = false;
       axios
         .delete(
-          `http://localhost:8081/updates/${this.mod.modID}/${this.updateToDelete._id}`,
+          `${this.server}/updates/${this.mod.modID}/${this.updateToDelete._id}`,
           {
             headers: {
               apikey: sessionStorage.apiKey

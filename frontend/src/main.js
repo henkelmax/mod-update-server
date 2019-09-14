@@ -7,6 +7,16 @@ import '@mdi/font/css/materialdesignicons.css';
 
 Vue.config.productionTip = false;
 
+const dev = process.env.NODE_ENV === 'development';
+
+Vue.mixin({
+  data() {
+    return {
+      server: dev ? 'http://localhost:8088' : ''
+    };
+  }
+});
+
 new Vue({
   router,
   vuetify,

@@ -102,7 +102,7 @@ export default {
     this.newMod = false;
 
     axios
-      .get(`http://localhost:8081/mods/${this.$route.query.modID}`)
+      .get(`${this.server}/mods/${this.$route.query.modID}`)
       .then(response => {
         this.mod = response.data;
       });
@@ -115,7 +115,7 @@ export default {
 
       if (this.newMod) {
         axios
-          .post(`http://localhost:8081/mods/add`, this.mod, {
+          .post(`${this.server}/mods/add`, this.mod, {
             headers: {
               apikey: sessionStorage.apiKey
             }
@@ -131,7 +131,7 @@ export default {
         delete m.modID;
         delete m._id;
         axios
-          .post(`http://localhost:8081/mods/edit/${this.mod.modID}`, m, {
+          .post(`${this.server}/mods/edit/${this.mod.modID}`, m, {
             headers: {
               apikey: sessionStorage.apiKey
             }

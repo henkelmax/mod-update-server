@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     updateMods() {
-      axios.get("http://localhost:8081/mods").then(response => {
+      axios.get(`${this.server}/mods`).then(response => {
         this.mods = response.data;
       });
     },
@@ -80,7 +80,7 @@ export default {
     removeMod() {
       this.dialog = false;
       axios
-        .delete(`http://localhost:8081/mods/${this.modToDelete.modID}`, {
+        .delete(`${this.server}/mods/${this.modToDelete.modID}`, {
           headers: {
             apikey: sessionStorage.apiKey
           }

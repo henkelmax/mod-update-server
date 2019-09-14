@@ -134,14 +134,14 @@ export default {
     this.newUpdate = false;
 
     axios
-      .get(`http://localhost:8081/mods/${this.$route.query.modID}`)
+      .get(`${this.server}/mods/${this.$route.query.modID}`)
       .then(response => {
         this.mod = response.data;
       });
 
     axios
       .get(
-        `http://localhost:8081/updates/${this.$route.query.modID}/${this.$route.query.updateID}`
+        `${this.server}/updates/${this.$route.query.modID}/${this.$route.query.updateID}`
       )
       .then(response => {
         this.update = response.data;
@@ -200,7 +200,7 @@ export default {
       if (this.newUpdate) {
         axios
           .post(
-            `http://localhost:8081/updates/${this.$route.query.modID}`,
+            `${this.server}/updates/${this.$route.query.modID}`,
             this.update,
             {
               headers: {
@@ -220,7 +220,7 @@ export default {
       } else {
         axios
           .post(
-            `http://localhost:8081/updates/${this.$route.query.modID}/${this.$route.query.updateID}`,
+            `${this.server}/updates/${this.$route.query.modID}/${this.$route.query.updateID}`,
             this.update,
             {
               headers: {
