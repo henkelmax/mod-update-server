@@ -9,6 +9,11 @@ RUN yarn install --production --silent
 
 COPY . .
 
+ENV DB_IP=localhost
+ENV DB_PORT=27017
+ENV DB_NAME=updates
+ENV PORT=80
+
 ENTRYPOINT []
 
 CMD ["node","index.js"]
