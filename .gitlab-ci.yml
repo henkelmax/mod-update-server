@@ -33,6 +33,8 @@ build-frontend:
     - yarn install
   script:
     - yarn build
+  only:
+    - tags
 
 build-docker-image:
   stage: build-docker-image
