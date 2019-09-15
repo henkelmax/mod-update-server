@@ -358,12 +358,19 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    const result = await db.collection('mods').deleteMany({ modID: modIDElement.value });
-
-    if (result.deletedCount <= 0) {
+    const result = await db.collection('mods').findOne({ modID: modIDElement.value });
+    if (!result) {
       res.status(400).send({ err: 'Mod does not exist' });
       return;
     }
+
+    const deleted = await db.collection('mods').deleteOne({ _id: result._id });
+    if (deleted.deletedCount <= 0) {
+      res.status(400).send({ err: 'Mod does not exist' });
+      return;
+    }
+
+    await db.collection('updates').deleteMany({ mod: result._id });
 
     res.status(200).end();
   });
