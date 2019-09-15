@@ -174,7 +174,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const modCursor = db.collection('mods').find({ modID: modIDElement.value });
     if (!(await modCursor.hasNext())) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
 
@@ -182,7 +182,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const updateCursor = db.collection('updates').find({ _id: new ObjectId(updateIDElement.value), mod: mod._id });
     if (!(await updateCursor.hasNext())) {
-      res.status(400).send({ err: 'Update does not exist' });
+      res.status(400).send({ err: [{ message: 'Update does not exist' }] });
       return;
     }
 
@@ -209,7 +209,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const modCursor = db.collection('mods').find({ modID: modIDElement.value });
     if (!(await modCursor.hasNext())) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
 
@@ -248,7 +248,7 @@ const apiKeyModsSchema = Joi.object().keys({
     const modCursor = db.collection('mods').find({ modID: modIDElement.value });
     const modExists = await modCursor.hasNext();
     if (!modExists) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
     const result = await db.collection('updates').insertOne({
@@ -256,7 +256,7 @@ const apiKeyModsSchema = Joi.object().keys({
       mod: (await modCursor.next())._id
     });
     if (result.insertedCount !== 1) {
-      res.status(400).send({ err: 'Unknown Error' });
+      res.status(400).send({ err: [{ message: 'Unknown Error' }] });
       return;
     }
     res.status(200).end();
@@ -293,13 +293,13 @@ const apiKeyModsSchema = Joi.object().keys({
     const modCursor = db.collection('mods').find({ modID: modIDElement.value });
     const modExists = await modCursor.hasNext();
     if (!modExists) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
 
     const result = await db.collection('updates').updateMany({ _id: new ObjectId(updateIDElement.value) }, { $set: bodyElement.value });
     if (result.result.n <= 0) {
-      res.status(400).send({ err: 'Update does not exist' });
+      res.status(400).send({ err: [{ message: 'Update does not exist' }] });
       return;
     }
 
@@ -329,7 +329,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const modCursor = db.collection('mods').find({ modID: modIDElement.value });
     if (!(await modCursor.hasNext())) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
 
@@ -337,7 +337,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const result = await db.collection('updates').deleteMany({ _id: new ObjectId(updateIDElement.value), mod: mod._id });
     if (result.deletedCount <= 0) {
-      res.status(400).send({ err: 'Update does not exist' });
+      res.status(400).send({ err: [{ message: 'Update does not exist' }] });
       return;
     }
 
@@ -360,13 +360,13 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const result = await db.collection('mods').findOne({ modID: modIDElement.value });
     if (!result) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
 
     const deleted = await db.collection('mods').deleteOne({ _id: result._id });
     if (deleted.deletedCount <= 0) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
 
@@ -393,12 +393,12 @@ const apiKeyModsSchema = Joi.object().keys({
       .find({ modID: element.value.modID })
       .hasNext();
     if (exists) {
-      res.status(400).send({ err: 'Mod already exists' });
+      res.status(400).send({ err: [{ message: 'Mod already exists' }] });
       return;
     }
     const result = await db.collection('mods').insertOne(element.value);
     if (result.insertedCount !== 1) {
-      res.status(400).send({ err: 'Unknown Error' });
+      res.status(400).send({ err: [{ message: 'Unknown Error' }] });
       return;
     }
     res.status(200).end();
@@ -427,7 +427,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const result = await db.collection('mods').updateMany({ modID: modIDElement.value }, { $set: element.value });
     if (result.result.n <= 0) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
     res.status(200).end();
@@ -444,7 +444,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
     const modCursor = db.collection('mods').find({ modID: modIDElement.value });
     if (!(await modCursor.hasNext())) {
-      res.status(400).send({ err: 'Mod does not exist' });
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
       return;
     }
 
