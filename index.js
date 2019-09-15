@@ -487,8 +487,23 @@ const apiKeyModsSchema = Joi.object().keys({
     res.status(200).send(forgeFormat);
   });
 
+  // Get all apiKeys
+  app.get('/apikeys', async (req, res) => {
+    if (!(await checkAuthMaster(req))) {
+      res.status(401).end();
+      return;
+    }
+
+    res.status(200).send(
+      await db
+        .collection('apiKeys')
+        .find({})
+        .toArray()
+    );
+  });
+
   // Add a new apiKey
-  app.post('/apikey/add', async (req, res) => {
+  app.post('/apikeys/add', async (req, res) => {
     if (!(await checkAuthMaster(req))) {
       res.status(401).end();
       return;
@@ -511,7 +526,7 @@ const apiKeyModsSchema = Joi.object().keys({
   });
 
   // Delete an apiKey
-  app.delete('/apikey/:apiKey', async (req, res) => {
+  app.delete('/apikeys/:apiKey', async (req, res) => {
     if (!(await checkAuthMaster(req))) {
       res.status(401).end();
       return;
