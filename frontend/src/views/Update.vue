@@ -244,9 +244,13 @@ export default {
     showError(err) {
       this.snackbar = true;
       if (err.response) {
-        this.error = `${err.response.statusText}: ${
-          err.response.data.err ? err.response.data.err : ""
-        }`;
+        if (err.response.status === 401) {
+          this.error = "You are not authorized to add new updates";
+        } else {
+          this.error = `${err.response.statusText}: ${
+            err.response.data.err ? err.response.data.err : ""
+          }`;
+        }
       } else {
         this.error = "Unknown Error";
       }

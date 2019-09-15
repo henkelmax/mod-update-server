@@ -86,7 +86,7 @@ const updateSchema = Joi.object().keys({
 
 const apiKeyModsSchema = Joi.object().keys({
   mods: Joi.array()
-    .items(Joi.string())
+    .items(modIDSchema)
     .min(1)
     .required()
 });
@@ -524,7 +524,7 @@ const apiKeyModsSchema = Joi.object().keys({
     }
 
     const apiKey = uuid();
-    const result = await db.collection('apiKeys').insert({ ...apiKeyElement.value, apiKey });
+    const result = await db.collection('apiKeys').insertOne({ ...apiKeyElement.value, apiKey });
     if (result.insertedCount !== 1) {
       res.status(400).send({ err: 'Unknown Error' });
       return;
@@ -564,7 +564,7 @@ const apiKeyModsSchema = Joi.object().keys({
       return false;
     }
 
-    if (masterKey && apiKeyElement.value.toLowerCase() === masterKey) {
+    if (masterKey && apiKeyElement.value && apiKeyElement.value.toLowerCase() === masterKey) {
       return true;
     }
 
@@ -584,6 +584,6 @@ const apiKeyModsSchema = Joi.object().keys({
       return false;
     }
 
-    return masterKey && apiKeyElement.value.toLowerCase() === masterKey;
+    return masterKey && apiKeyElement.value && apiKeyElement.value.toLowerCase() === masterKey;
   }
 })();

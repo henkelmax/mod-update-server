@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import Clipboard from 'v-clipboard';
 import App from './App.vue';
 import router from './router';
 import vuetify from './plugins/vuetify';
@@ -8,6 +9,8 @@ import '@mdi/font/css/materialdesignicons.css';
 Vue.config.productionTip = false;
 
 const dev = process.env.NODE_ENV === 'development';
+
+Vue.use(Clipboard);
 
 Vue.mixin({
   data() {

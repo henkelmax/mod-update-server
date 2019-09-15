@@ -4,7 +4,7 @@
       <v-card-title>
         <span>Mods</span>
         <v-spacer></v-spacer>
-        <v-btn text color="gray" @click="addMod()">Add Mod</v-btn>
+        <v-btn text color="primary" @click="addMod()">Add Mod</v-btn>
       </v-card-title>
       <v-list>
         <template v-for="(mod, i) in mods">
@@ -47,6 +47,10 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
+      {{ error }}
+      <v-btn dark text @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -59,7 +63,9 @@ export default {
     return {
       mods: [],
       dialog: false,
-      modToDelete: {}
+      modToDelete: {},
+      snackbar: false,
+      error: ""
     };
   },
   created() {
@@ -67,9 +73,15 @@ export default {
   },
   methods: {
     updateMods() {
-      axios.get(`${this.server}/mods`).then(response => {
-        this.mods = response.data;
-      });
+      axios
+        .get(`${this.server}/mods`)
+        .then(response => {
+          this.mods = response.data;
+        })
+        .catch(err => {
+          this.error = "Could not retrieve mods";
+          this.snackbar = true;
+        });
     },
     addUpdate(modID) {
       this.$router.push({ path: "updates", query: { modID: modID } });
@@ -89,7 +101,8 @@ export default {
           this.updateMods();
         })
         .catch(err => {
-          // TODO error
+          this.error = "Could not delete mod";
+          this.snackbar = true;
         });
     },
     addMod() {

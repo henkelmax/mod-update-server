@@ -45,6 +45,10 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
+      {{ error }}
+      <v-btn dark text @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -59,7 +63,9 @@ export default {
       mod: {},
       updates: [],
       dialog: false,
-      updateToDelete: {}
+      updateToDelete: {},
+      snackbar: false,
+      error: ""
     };
   },
   created() {
@@ -76,12 +82,20 @@ export default {
         .get(`${this.server}/mods/${this.$route.query.modID}`)
         .then(response => {
           this.mod = response.data;
+        })
+        .catch(err => {
+          this.error = "Could not retrieve mods";
+          this.snackbar = true;
         });
 
       axios
         .get(`${this.server}/updates/${this.$route.query.modID}`)
         .then(response => {
           this.updates = response.data;
+        })
+        .catch(err => {
+          this.error = "Could not retrieve updates";
+          this.snackbar = true;
         });
     },
     removeUpdate() {
@@ -99,7 +113,8 @@ export default {
           this.updateUpdates();
         })
         .catch(err => {
-          // TODO error
+          this.error = "Could not delete update";
+          this.snackbar = true;
         });
     },
     openDeleteDialog(update) {

@@ -36,6 +36,11 @@ export default new Router({
       name: 'update',
       props: { modID: '', updateID: '' },
       component: () => import('./views/Update.vue')
+    },
+    {
+      path: '/apikeys',
+      name: 'apikeys',
+      component: () => import('./views/ApiKeys.vue')
     }
   ]
 });
