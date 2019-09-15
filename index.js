@@ -218,7 +218,7 @@ const apiKeyModsSchema = Joi.object().keys({
     const updates = await db
       .collection('updates')
       .find({ mod: mod._id })
-      .sort({ publishDate: -1 })
+      .sort({ publishDate: -1, gameVersion: -1 })
       .limit(limitElement.value)
       .toArray();
     res.status(200).send(updates);

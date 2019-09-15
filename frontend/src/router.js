@@ -41,6 +41,11 @@ export default new Router({
       path: '/apikeys',
       name: 'apikeys',
       component: () => import('./views/ApiKeys.vue')
+    },
+    {
+      path: '/import',
+      name: 'import',
+      component: () => import('./views/Import.vue')
     }
   ]
 });
