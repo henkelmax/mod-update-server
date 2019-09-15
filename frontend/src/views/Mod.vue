@@ -90,7 +90,7 @@ export default {
       snackbar: false,
       modIDRules: [
         v => !!v || "This field is required",
-        v => /^[a-z]*$/.test(v) || "The Mod ID can only contain [a-z]"
+        v => /^[a-z-_]*$/.test(v) || "The Mod ID can only contain [a-z]"
       ],
       stringRequiredRules: [v => !!v || "This field is required"]
     };
@@ -109,8 +109,10 @@ export default {
   },
   methods: {
     validate() {
-      if (this.$refs.form.validate()) {
+      if (!this.$refs.form.validate()) {
         this.snackbar = true;
+        this.error = "Please check your fields";
+        return;
       }
 
       if (this.newMod) {

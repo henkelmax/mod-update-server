@@ -189,12 +189,14 @@ export default {
   },
   methods: {
     validate() {
-      if (!this.$route.query.modID) {
+      if (!this.$refs.form.validate()) {
+        this.snackbar = true;
+        this.error = "Please check your fields";
         return;
       }
 
-      if (this.$refs.form.validate()) {
-        this.snackbar = true;
+      if (!this.$route.query.modID) {
+        return;
       }
 
       if (this.newUpdate) {

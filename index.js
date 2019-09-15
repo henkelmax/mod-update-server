@@ -12,7 +12,7 @@ const cache = apicache.middleware;
 
 const modIDSchema = Joi.string()
   .min(1)
-  .regex(/[a-z]*/)
+  .regex(/[a-z-_]*/)
   .required();
 
 const limitSchema = Joi.number()
