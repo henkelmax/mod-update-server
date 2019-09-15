@@ -74,7 +74,7 @@ const updateSchema = Joi.object().keys({
     .min(1)
     .required(),
   updateMessages: Joi.array()
-    .items(Joi.string())
+    .items(Joi.string().allow(''))
     .required(),
   releaseType: Joi.string()
     .valid('alpha', 'beta', 'release')
