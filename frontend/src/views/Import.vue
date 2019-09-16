@@ -86,8 +86,8 @@ export default {
       }
       const reader = new FileReader();
       reader.onload = () => {
-        const json = JSON.parse(reader.result);
         try {
+          const json = JSON.parse(reader.result);
           const updates = this.toUpdates(json);
           const promises = [];
           for (let update of updates) {
