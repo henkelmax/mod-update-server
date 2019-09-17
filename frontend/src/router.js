@@ -51,6 +51,11 @@ export default new Router({
       path: '/backup',
       name: 'backup',
       component: () => import('./views/Backup.vue')
+    },
+    {
+      path: '/restore',
+      name: 'restore',
+      component: () => import('./views/Restore.vue')
     }
   ]
 });

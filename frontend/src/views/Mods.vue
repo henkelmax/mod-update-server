@@ -7,6 +7,7 @@
         <v-btn text color="primary" @click="addMod()">Add Mod</v-btn>
         <v-btn text color="primary" @click="importMod()">Import Updates</v-btn>
         <v-btn text color="primary" @click="backup()">Backup</v-btn>
+        <v-btn text color="primary" @click="restore()">Restore</v-btn>
       </v-card-title>
       <v-list>
         <template v-for="(mod, i) in mods">
@@ -115,6 +116,9 @@ export default {
     },
     backup() {
       this.$router.push({ path: "backup" });
+    },
+    restore() {
+      this.$router.push({ path: "restore" });
     },
     openDeleteDialog(mod) {
       this.dialog = true;
