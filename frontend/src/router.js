@@ -46,6 +46,11 @@ export default new Router({
       path: '/import',
       name: 'import',
       component: () => import('./views/Import.vue')
+    },
+    {
+      path: '/backup',
+      name: 'backup',
+      component: () => import('./views/Backup.vue')
     }
   ]
 });
