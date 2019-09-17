@@ -10,10 +10,14 @@
         <span class="mr-2">API Keys</span>
         <v-icon>mdi-lock</v-icon>
       </v-btn>
+      <v-btn v-if="loggedIn()" text @click="logOut">
+        <span class="mr-2">Logout</span>
+        <v-icon>mdi-power</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-content>
-      <router-view />
+      <router-view/>
     </v-content>
   </v-app>
 </template>
@@ -37,6 +41,12 @@ export default {
     },
     loggedIn() {
       return !!sessionStorage.apiKey;
+    },
+    logOut() {
+      sessionStorage.removeItem("apiKey");
+      if (this.$route.name !== "login") {
+        this.$router.push({ path: "/" });
+      }
     }
   }
 };
