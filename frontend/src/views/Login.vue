@@ -19,6 +19,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
+        <v-btn class="mr-4 mb-2" @click="skip()" >Skip</v-btn>
         <v-btn class="mr-6 mb-2" @click="logIn()" :disabled="!valid">Log In</v-btn>
       </v-card-actions>
     </v-card>
@@ -65,6 +66,10 @@ export default {
         return;
       }
       sessionStorage.apiKey = this.password;
+      this.$router.push("mods");
+    },
+    skip() {
+      sessionStorage.apiKey = "00000000-0000-0000-0000-000000000000";
       this.$router.push("mods");
     }
   }
