@@ -7,6 +7,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 const Joi = require('joi');
 const uuid = require('uuid/v4');
 const path = require('path');
+const auth = require('basic-auth');
 
 const cache = apicache.middleware;
 
@@ -107,6 +108,9 @@ const apiKeyModsSchema = Joi.object().keys({
 
   const masterKey = apiKeySchema.validate(process.env.MASTER_KEY).value;
 
+  const loginUsername = process.env.LOGIN_USERNAME;
+  const loginPassword = process.env.LOGIN_PASSWORD;
+
   const client = await MongoClient.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -123,6 +127,15 @@ const apiKeyModsSchema = Joi.object().keys({
   if (!(await db.listCollections({ name: 'apiKeys' }).hasNext())) {
     db.createCollection('apiKeys');
   }
+
+  app.get('/', async (req, res, next) => {
+    if (await authenticate(req)) {
+      next();
+    } else {
+      res.set('WWW-Authenticate', 'Basic realm="401"');
+      res.status(401).send('Authentication required.');
+    }
+  });
 
   app.use('/', express.static(path.join(__dirname, 'frontend/dist')));
 
@@ -233,7 +246,7 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    if (!(await checkAuth(req, modIDElement.value))) {
+    if (!(await checkAuthRequest(req, modIDElement.value))) {
       res.status(401).end();
       return;
     }
@@ -271,7 +284,7 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    if (!(await checkAuth(req, modIDElement.value))) {
+    if (!(await checkAuthRequest(req, modIDElement.value))) {
       res.status(401).end();
       return;
     }
@@ -315,7 +328,7 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    if (!(await checkAuth(req, modIDElement.value))) {
+    if (!(await checkAuthRequest(req, modIDElement.value))) {
       res.status(401).end();
       return;
     }
@@ -353,7 +366,7 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    if (!(await checkAuth(req, modIDElement.value))) {
+    if (!(await checkAuthRequest(req, modIDElement.value))) {
       res.status(401).end();
       return;
     }
@@ -377,7 +390,7 @@ const apiKeyModsSchema = Joi.object().keys({
 
   // Add a mod
   app.post('/mods/add', async (req, res) => {
-    if (!(await checkAuth(req))) {
+    if (!(await checkAuthRequest(req))) {
       res.status(401).end();
       return;
     }
@@ -413,7 +426,7 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    if (!(await checkAuth(req, modIDElement.value))) {
+    if (!(await checkAuthRequest(req, modIDElement.value))) {
       res.status(401).end();
       return;
     }
@@ -558,24 +571,28 @@ const apiKeyModsSchema = Joi.object().keys({
     console.log(`Listening on port ${port}.`);
   });
 
-  async function checkAuth(req, modID = '*') {
+  async function checkAuthRequest(req, modID = '*') {
     const apiKeyElement = apiKeySchema.validate(req.headers.apikey);
     if (apiKeyElement.error) {
       return false;
     }
 
-    if (masterKey && apiKeyElement.value && apiKeyElement.value.toLowerCase() === masterKey) {
+    return checkAuth(apiKeyElement.value, modID); // TODO
+  }
+
+  async function checkAuth(apiKey, modID = '*') {
+    if (masterKey && apiKey && apiKey.toLowerCase() === masterKey) {
       return true;
     }
 
-    const apiKeyCursor = db.collection('apiKeys').find({ apiKey: apiKeyElement.value });
+    const apiKeyCursor = db.collection('apiKeys').find({ apiKey });
 
     if (!(await apiKeyCursor.hasNext())) {
       return false;
     }
-    const apiKey = await apiKeyCursor.next();
+    const apiKeyDB = await apiKeyCursor.next();
 
-    return apiKey.mods.includes('*') || apiKey.mods.includes(modID);
+    return apiKeyDB.mods.includes('*') || apiKeyDB.mods.includes(modID);
   }
 
   async function checkAuthMaster(req) {
@@ -585,5 +602,26 @@ const apiKeyModsSchema = Joi.object().keys({
     }
 
     return masterKey && apiKeyElement.value && apiKeyElement.value.toLowerCase() === masterKey;
+  }
+
+  async function authenticate(req) {
+    const credentials = auth(req);
+
+    if (credentials) {
+      if (credentials.name.toLowerCase() === 'apikey') {
+        if (await checkAuth(credentials.pass)) {
+          return true;
+        }
+      }
+      if (
+        loginUsername
+        && loginPassword
+        && credentials.name === loginUsername
+        && credentials.pass === loginPassword
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 })();
