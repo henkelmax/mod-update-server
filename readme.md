@@ -1,7 +1,5 @@
 # Update Server
 
-![Pipeline](https://badges.maxhenkel.de/pipeline/14278390) ![Latest](https://badges.maxhenkel.de/tag/14278390)
-
 ## Requests
 
 | Method   | Path                         | Description                                                                        |
