@@ -17,7 +17,7 @@ before_script:
 
 build-frontend:
   stage: build-frontend
-  image: node:alpine
+  image: node:lts-alpine
   cache:
     paths:
       - frontend/node_modules/
