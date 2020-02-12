@@ -15,6 +15,7 @@
 | `POST`   | `/mods/add`                  | Add a new mod. Requires an apikey in header. See [Mod](#mod).                      |
 | `POST`   | `/mods/edit/MODNAME`         | Edit an existing mod. Requires an apikey in header. See [Mod](#mod).               |
 | `GET`    | `/forge/MODNAME`             | Forge update check format.                                                         |
+| `GET`    | `/latest/MODNAME`            | General update format.                                                             |
 | `GET`    | `/apikeys`                   | List all apikeys.                                                                  |
 | `POST`   | `/apikeys/add`               | Add a new apikey. See [ApiKey](#apikey).                                           |
 | `DELETE` | `/apikeys/APIKEY`            | Remove an apikey.                                                                  |

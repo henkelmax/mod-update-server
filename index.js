@@ -507,6 +507,56 @@ const apiKeyModsSchema = Joi.object().keys({
     res.status(200).send(forgeFormat);
   });
 
+  // Get the update format for the website
+  app.get('/latest/:modID', cache('1 minute'), async (req, res) => {
+    const modIDElement = modIDSchema.validate(req.params.modID);
+    if (modIDElement.error) {
+      res.status(400).send({ err: modIDElement.error.details });
+      res.end();
+      return;
+    }
+
+    const modCursor = db.collection('mods').find({ modID: modIDElement.value });
+    if (!(await modCursor.hasNext())) {
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
+      return;
+    }
+
+    const mod = await modCursor.next();
+
+    const updates = await db
+      .collection('updates')
+      .aggregate([
+        {
+          $match: {
+            mod: mod._id
+          }
+        },
+        {
+          $sort: {
+            publishDate: -1
+          }
+        },
+        {
+          $project: {
+            _id: false,
+            releaseType: false,
+            mod: false,
+            publishDate: false
+          }
+        }
+      ])
+      .toArray();
+
+    const data = {};
+
+    updates.reverse().forEach(update => {
+      data[update.gameVersion] = update;
+    });
+
+    res.status(200).send(Object.values(data));
+  });
+
   // Get all apiKeys
   app.get('/apikeys', async (req, res) => {
     if (!(await checkAuthMaster(req))) {
