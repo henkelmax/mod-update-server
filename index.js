@@ -237,6 +237,24 @@ const apiKeyModsSchema = Joi.object().keys({
     res.status(200).send(updates);
   });
 
+  // Get all updates
+  app.get('/updates', async (req, res) => {
+    const limitElement = limitSchema.validate(req.query.limit);
+    if (limitElement.error) {
+      res.status(400).send({ err: limitElement.error.details });
+      res.end();
+      return;
+    }
+
+    const updates = await db
+      .collection('updates')
+      .find({})
+      .sort({ publishDate: -1, gameVersion: -1 })
+      .limit(limitElement.value)
+      .toArray();
+    res.status(200).send(updates);
+  });
+
   // Add an update
   app.post('/updates/:modID', async (req, res) => {
     const modIDElement = modIDSchema.validate(req.params.modID);
