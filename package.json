@@ -5,23 +5,24 @@
   "author": "Max Henkel",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon -r dotenv/config index.js"
+    "dev": "nodemon -r dotenv/config index.js",
+    "mongo": "mongod --dbpath ./mongo"
   },
   "dependencies": {
-    "apicache": "^1.5.2",
-    "basic-auth": "^2.0.1",
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "joi": "^14.3.1",
-    "mongodb": "^3.3.2",
-    "uuid": "^3.3.3"
+    "apicache": "1.*",
+    "basic-auth": "2.*",
+    "body-parser": "1.*",
+    "cors": "2.*",
+    "express": "4.*",
+    "joi": "14.*",
+    "mongodb": "3.*",
+    "uuid": "3.*"
   },
   "devDependencies": {
-    "dotenv": "^8.1.0",
-    "eslint": "^6.3.0",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.18.2",
-    "nodemon": "^1.19.2"
+    "dotenv": "8.*",
+    "eslint": "6.*",
+    "eslint-config-airbnb-base": "14.*",
+    "eslint-plugin-import": "2.*",
+    "nodemon": "2.0.2"
   }
 }

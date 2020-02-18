@@ -11,13 +11,17 @@ module.exports = {
     'global-require': 'off',
     'arrow-parens': 'off',
     'no-multi-assign': 'off',
+    'linebreak-style': 'off',
+    'no-unused-vars': 'off',
+    'object-shorthand': 'off',
+    'max-len': 'off',
     'no-plusplus': [
       'error',
       {
         allowForLoopAfterthoughts: true
       }
     ],
-    quotes: ['error', 'single'],
+    quotes: ['off', 'single'],
     'comma-dangle': ['error', 'never'],
     'no-underscore-dangle': 'off'
   },

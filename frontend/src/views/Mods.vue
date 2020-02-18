@@ -12,28 +12,28 @@
       <v-list>
         <template v-for="(mod, i) in mods">
           <div :key="mod.modID">
-            <v-list-item>
-              <v-list-item-avatar>
-                <v-btn text icon color="gray" @click="addUpdate(mod.modID)">
+            <v-list-item-group>
+              <v-list-item>
+                <v-list-item-avatar @click="addUpdate(mod.modID)">
                   <v-icon>mdi-file-document-box-outline</v-icon>
-                </v-btn>
-              </v-list-item-avatar>
+                </v-list-item-avatar>
 
-              <v-list-item-content>
-                <v-list-item-title v-text="mod.name"></v-list-item-title>
-                <v-list-item-subtitle v-text="mod.description"></v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-btn text icon color="gray" @click="editMod(mod.modID)">
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-              </v-list-item-action>
-              <v-list-item-action>
-                <v-btn text icon color="gray" @click="openDeleteDialog(mod)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-list-item>
+                <v-list-item-content @click="addUpdate(mod.modID)">
+                  <v-list-item-title v-text="mod.name"></v-list-item-title>
+                  <v-list-item-subtitle v-text="mod.description"></v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-btn text icon color="gray" @click="editMod(mod.modID)">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+                <v-list-item-action>
+                  <v-btn text icon color="gray" @click="openDeleteDialog(mod)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list-item-group>
             <v-divider v-if="i!==mods.length-1" class="ml-2 mr-2"></v-divider>
           </div>
         </template>
