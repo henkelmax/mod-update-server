@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const Joi = require('joi');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const path = require('path');
 const auth = require('basic-auth');
 
