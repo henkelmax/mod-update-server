@@ -1,4 +1,8 @@
-# Update Server
+# Mod Update Server
+
+A server for Minecraft modders that manages all your mod updates.
+It provides a web interface and REST API to manage everything.
+This can be used directly for the [Forge Update Checker](https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/).
 
 ## Requests
 
