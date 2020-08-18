@@ -81,8 +81,17 @@ yarn install
 ### Running the project in development
 
 ``` sh
-mongod --dbpath <PATH_TO_DB>
+yarn mongo
+yarn dev
 
+cd frontend
+yarn serve
+```
+
+or
+
+``` sh
+mongod --dbpath <PATH_TO_DB>
 yarn dev
 
 cd frontend

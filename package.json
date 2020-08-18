@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "Max Henkel",
-  "license": "MIT",
   "scripts": {
     "dev": "nodemon -r dotenv/config index.js",
     "mongo": "mongod --dbpath ./mongo"
