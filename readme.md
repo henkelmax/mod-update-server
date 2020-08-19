@@ -4,7 +4,13 @@ A server for Minecraft modders that manages all your mod updates.
 It provides a web interface and REST API to manage everything.
 This can be used directly for the [Forge Update Checker](https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/).
 
-*See also: [Forge Update Gradle Plugin](https://github.com/henkelmax/forge-update-plugin)*
+## Useful Links
+
+- [Docker Image](https://hub.docker.com/repository/docker/henkelmax/mod-update-server)
+- [Forge Update Gradle Plugin](https://github.com/henkelmax/forge-update-plugin)
+- [Forge Update Checker](https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/)
+
+---
 
 ## Requests
 
