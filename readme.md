@@ -1,4 +1,4 @@
-# Mod Update Server ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/henkelmax/mod-update-server/Build) ![GitHub issues](https://img.shields.io/github/issues-raw/henkelmax/mod-update-server) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/henkelmax/mod-update-server?include_prereleases)
+# Mod Update Server ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/henkelmax/mod-update-server/Build) ![GitHub issues](https://img.shields.io/github/issues-raw/henkelmax/mod-update-server) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/henkelmax/mod-update-server?include_prereleases) ![](https://img.shields.io/docker/pulls/henkelmax/mod-update-server)
 
 A server for Minecraft modders that manages all your mod updates.
 It provides a web interface and REST API to manage everything.
