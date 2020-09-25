@@ -92,6 +92,16 @@ const apiKeyModsSchema = Joi.object().keys({
     .required()
 });
 
+const pageSchema = Joi.number()
+  .integer()
+  .min(0)
+  .default(0);
+
+const amountSchema = Joi.number()
+  .integer()
+  .min(1)
+  .default(16);
+
 (async () => {
   const app = express();
 
@@ -148,7 +158,64 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    const mod = await db.collection('mods').findOne({ modID: modIDElement.value });
+    const modCursor = await db.collection('mods').aggregate([
+      {
+        $match: {
+          $expr: {
+            $eq: ['$modID', modIDElement.value]
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'updates',
+          let: { id: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$mod', '$$id']
+                }
+              }
+            },
+            {
+              $count: 'count'
+            }
+          ],
+          as: 'updates'
+        }
+      },
+      {
+        $unwind: '$updates'
+      },
+      {
+        $addFields: {
+          updateCount: {
+            $arrayElemAt: [
+              {
+                $map: {
+                  input: { $objectToArray: '$updates' },
+                  as: 'c',
+                  in: '$$c.v'
+                }
+              },
+              0
+            ]
+          }
+        }
+      },
+      {
+        $unset: 'updates'
+      }
+    ]);
+
+    if (!(await modCursor.hasNext())) {
+      res.status(400).send({ err: [{ message: 'Mod does not exist' }] });
+      return;
+    }
+
+    const mod = await modCursor.next();
+
     res.status(200).send(mod);
   });
 
@@ -157,7 +224,49 @@ const apiKeyModsSchema = Joi.object().keys({
     res.status(200).send(
       await db
         .collection('mods')
-        .find({})
+        .aggregate([
+          {
+            $lookup: {
+              from: 'updates',
+              let: { id: '$_id' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$mod', '$$id']
+                    }
+                  }
+                },
+                {
+                  $count: 'count'
+                }
+              ],
+              as: 'updates'
+            }
+          },
+          {
+            $unwind: '$updates'
+          },
+          {
+            $addFields: {
+              updateCount: {
+                $arrayElemAt: [
+                  {
+                    $map: {
+                      input: { $objectToArray: '$updates' },
+                      as: 'c',
+                      in: '$$c.v'
+                    }
+                  },
+                  0
+                ]
+              }
+            }
+          },
+          {
+            $unset: 'updates'
+          }
+        ])
         .toArray()
     );
   });
@@ -213,9 +322,16 @@ const apiKeyModsSchema = Joi.object().keys({
       return;
     }
 
-    const limitElement = limitSchema.validate(req.query.limit);
-    if (limitElement.error) {
-      res.status(400).send({ err: limitElement.error.details });
+    const amountElement = amountSchema.validate(req.query.amount);
+    if (amountElement.error) {
+      res.status(400).send({ err: amountElement.error.details });
+      res.end();
+      return;
+    }
+
+    const pageElement = pageSchema.validate(req.query.page);
+    if (pageElement.error) {
+      res.status(400).send({ err: pageElement.error.details });
       res.end();
       return;
     }
@@ -232,16 +348,24 @@ const apiKeyModsSchema = Joi.object().keys({
       .collection('updates')
       .find({ mod: mod._id })
       .sort({ publishDate: -1, gameVersion: -1 })
-      .limit(limitElement.value)
+      .skip(amountElement.value * pageElement.value)
+      .limit(amountElement.value)
       .toArray();
     res.status(200).send(updates);
   });
 
   // Get all updates
   app.get('/updates', async (req, res) => {
-    const limitElement = limitSchema.validate(req.query.limit);
-    if (limitElement.error) {
-      res.status(400).send({ err: limitElement.error.details });
+    const amountElement = amountSchema.validate(req.query.amount);
+    if (amountElement.error) {
+      res.status(400).send({ err: amountElement.error.details });
+      res.end();
+      return;
+    }
+
+    const pageElement = pageSchema.validate(req.query.page);
+    if (pageElement.error) {
+      res.status(400).send({ err: pageElement.error.details });
       res.end();
       return;
     }
@@ -255,7 +379,10 @@ const apiKeyModsSchema = Joi.object().keys({
           }
         },
         {
-          $limit: limitElement.value
+          $skip: amountElement.value * pageElement.value
+        },
+        {
+          $limit: amountElement.value
         },
         {
           $lookup: {

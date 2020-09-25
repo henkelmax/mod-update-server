@@ -14,24 +14,24 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 
 ## Requests
 
-| Method   | Path                         | Description                                                                                 |
-| -------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
-| `GET`    | `/mods`                      | List all mods.                                                                              |
-| `GET`    | `/mods/MODNAME`              | Get a specific mod.                                                                         |
-| `GET`    | `/updates`                   | Show update entries for all mods. Optional query parameter: limit for the max update count. |
-| `GET`    | `/updates/MODNAME`           | Show update entries. Optional query parameter: limit for the max update count.              |
-| `GET`    | `/updates/MODNAME/UPDATE_ID` | Show update entry (updateid mcversion, version, updatemessage, tags[latest, ...]).          |
-| `POST`   | `/updates/MODNAME`           | Add a new update. Requires an apikey in header. See [Update](#update).                      |
-| `POST`   | `/updates/MODNAME/UPDATE_ID` | Updates an update.                                                                          |
-| `DELETE` | `/updates/MODNAME/UPDATE_ID` | Remove an update. Requires an apikey in header.                                             |
-| `DELETE` | `/mods/MODNAME`              | Remove a mod. Requires an apikey in header.                                                 |
-| `POST`   | `/mods/add`                  | Add a new mod. Requires an apikey in header. See [Mod](#mod).                               |
-| `POST`   | `/mods/edit/MODNAME`         | Edit an existing mod. Requires an apikey in header. See [Mod](#mod).                        |
-| `GET`    | `/forge/MODNAME`             | Forge update check format.                                                                  |
-| `GET`    | `/latest/MODNAME`            | General update format.                                                                      |
-| `GET`    | `/apikeys`                   | List all apikeys.                                                                           |
-| `POST`   | `/apikeys/add`               | Add a new apikey. See [ApiKey](#apikey).                                                    |
-| `DELETE` | `/apikeys/APIKEY`            | Remove an apikey.                                                                           |
+| Method   | Path                                | Description                                                                                                              |
+| -------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `GET`    | `/mods`                             | List all mods.                                                                                                           |
+| `GET`    | `/mods/MODNAME`                     | Get a specific mod.                                                                                                      |
+| `GET`    | `/updates?amount=16&page=0`         | Show update entries for all mods. Optional query parameter: `amount` for the update count per page, `page` for the page. |
+| `GET`    | `/updates/MODNAME?amount=16&page=0` | Show update entries. Optional query parameter: `amount` for the update count per page, `page` for the page.              |
+| `GET`    | `/updates/MODNAME/UPDATE_ID`        | Show update entry (updateid mcversion, version, updatemessage, tags[latest, ...]).                                       |
+| `POST`   | `/updates/MODNAME`                  | Add a new update. Requires an apikey in header. See [Update](#update).                                                   |
+| `POST`   | `/updates/MODNAME/UPDATE_ID`        | Updates an update.                                                                                                       |
+| `DELETE` | `/updates/MODNAME/UPDATE_ID`        | Remove an update. Requires an apikey in header.                                                                          |
+| `DELETE` | `/mods/MODNAME`                     | Remove a mod. Requires an apikey in header.                                                                              |
+| `POST`   | `/mods/add`                         | Add a new mod. Requires an apikey in header. See [Mod](#mod).                                                            |
+| `POST`   | `/mods/edit/MODNAME`                | Edit an existing mod. Requires an apikey in header. See [Mod](#mod).                                                     |
+| `GET`    | `/forge/MODNAME`                    | Forge update check format.                                                                                               |
+| `GET`    | `/latest/MODNAME`                   | General update format.                                                                                                   |
+| `GET`    | `/apikeys`                          | List all apikeys.                                                                                                        |
+| `POST`   | `/apikeys/add`                      | Add a new apikey. See [ApiKey](#apikey).                                                                                 |
+| `DELETE` | `/apikeys/APIKEY`                   | Remove an apikey.                                                                                                        |
 
 **Example Update**
 
@@ -77,7 +77,7 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 
 ### Installation
 
-``` sh
+```sh
 yarn install
 
 cd frontend
@@ -86,7 +86,7 @@ yarn install
 
 ### Running the project in development
 
-``` sh
+```sh
 yarn mongo
 yarn dev
 
@@ -96,7 +96,7 @@ yarn serve
 
 or
 
-``` sh
+```sh
 mongod --dbpath <PATH_TO_DB>
 yarn dev
 

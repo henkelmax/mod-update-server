@@ -15,6 +15,9 @@ module.exports = {
     'no-unused-vars': 'off',
     'object-shorthand': 'off',
     'max-len': 'off',
+    'no-restricted-syntax': 'off',
+    'operator-linebreak': 'off',
+    'implicit-arrow-linebreak': 'off',
     'no-plusplus': [
       'error',
       {

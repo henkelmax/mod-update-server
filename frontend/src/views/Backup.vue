@@ -8,7 +8,13 @@
       </v-card-title>
       <v-card-text>
         <v-row justify="center">
-          <v-progress-circular v-if="processing" :size="70" :width="7" color="blue" indeterminate></v-progress-circular>
+          <v-progress-circular
+            v-if="processing"
+            :size="70"
+            :width="7"
+            color="blue"
+            indeterminate
+          ></v-progress-circular>
         </v-row>
       </v-card-text>
       <v-card-actions>
@@ -16,7 +22,13 @@
         <v-btn class="mr-6 mb-2" @click="backup">Backup</v-btn>
       </v-card-actions>
     </v-card>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
+    <v-snackbar
+      v-model="snackbar"
+      bottom
+      color="error"
+      multi-line
+      :timeout="6000"
+    >
       {{ error }}
       <v-btn dark text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
@@ -51,11 +63,13 @@ export default {
         const promises = [];
 
         const mods = (await axios.get(`${this.server}/mods`)).data;
-        for (let mod of mods) {
-          let promise = axios.get(`${this.server}/updates/${mod.modID}`);
+        for (const mod of mods) {
+          const promise = axios.get(
+            `${this.server}/updates/${mod.modID}?amount=${Number.MAX_SAFE_INTEGER}`
+          );
           promises.push(promise);
 
-          promise.then(response => {
+          promise.then((response) => {
             mod.updates = response.data;
             backup.mods.push(mod);
           });
