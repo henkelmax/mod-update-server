@@ -6,7 +6,7 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 
 ## Useful Links
 
-- [Docker Image](https://hub.docker.com/repository/docker/henkelmax/mod-update-server)
+- [Docker Image](https://hub.docker.com/r/henkelmax/mod-update-server)
 - [Forge Update Gradle Plugin](https://github.com/henkelmax/forge-update-plugin)
 - [Forge Update Checker](https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/)
 
