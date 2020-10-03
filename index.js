@@ -186,18 +186,26 @@ const amountSchema = Joi.number()
         }
       },
       {
-        $unwind: '$updates'
+        $unwind: {
+          path: '$updates',
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $addFields: {
           updateCount: {
-            $arrayElemAt: [
+            $ifNull: [
               {
-                $map: {
-                  input: { $objectToArray: '$updates' },
-                  as: 'c',
-                  in: '$$c.v'
-                }
+                $arrayElemAt: [
+                  {
+                    $map: {
+                      input: { $objectToArray: '$updates' },
+                      as: 'c',
+                      in: '$$c.v'
+                    }
+                  },
+                  0
+                ]
               },
               0
             ]
@@ -245,18 +253,26 @@ const amountSchema = Joi.number()
             }
           },
           {
-            $unwind: '$updates'
+            $unwind: {
+              path: '$updates',
+              preserveNullAndEmptyArrays: true
+            }
           },
           {
             $addFields: {
               updateCount: {
-                $arrayElemAt: [
+                $ifNull: [
                   {
-                    $map: {
-                      input: { $objectToArray: '$updates' },
-                      as: 'c',
-                      in: '$$c.v'
-                    }
+                    $arrayElemAt: [
+                      {
+                        $map: {
+                          input: { $objectToArray: '$updates' },
+                          as: 'c',
+                          in: '$$c.v'
+                        }
+                      },
+                      0
+                    ]
                   },
                   0
                 ]
