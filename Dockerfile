@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS frontend-builder
+FROM node:12-alpine AS frontend-builder
 
 COPY frontend/package.json .
 COPY frontend/yarn.lock .
@@ -10,7 +10,7 @@ COPY frontend .
 RUN yarn build
 
 
-FROM node:lts-alpine
+FROM node:12-alpine
 
 WORKDIR /forge-update
 
