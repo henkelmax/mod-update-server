@@ -129,11 +129,15 @@ export default {
             this.showError(err);
           });
       } else {
-        const m = Object.assign({}, this.mod);
-        delete m.modID;
-        delete m._id;
+        const updatedMod = {
+          name: this.mod.name,
+          description: this.mod.description,
+          websiteURL: this.mod.websiteURL,
+          downloadURL: this.mod.downloadURL,
+          issueURL: this.mod.issueURL
+        };
         axios
-          .post(`${this.server}/mods/edit/${this.mod.modID}`, m, {
+          .post(`${this.server}/mods/edit/${this.mod.modID}`, updatedMod, {
             headers: {
               apikey: sessionStorage.apiKey
             }
