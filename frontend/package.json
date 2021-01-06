@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@mdi/font": "^5.8.55",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "core-js": "^3.8.1",
     "js-file-download": "^0.4.12",
     "moment": "^2.29.1",
