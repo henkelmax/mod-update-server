@@ -8,18 +8,18 @@
     "mongo": "mongod --dbpath ./mongo"
   },
   "dependencies": {
-    "apicache": "^1.5.3",
+    "apicache": "^1.6.2",
     "basic-auth": "^2.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "joi": "^17.3.0",
-    "mongodb": "^3.6.3",
+    "joi": "^17.4.0",
+    "mongodb": "^3.6.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "eslint": "^7.18.0",
+    "eslint": "^7.23.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "nodemon": "^2.0.7"
