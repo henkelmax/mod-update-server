@@ -1,6 +1,6 @@
 {
   "name": "update-server",
-  "version": "1.0.21",
+  "version": "1.1.0",
   "main": "index.js",
   "author": "Max Henkel",
   "scripts": {

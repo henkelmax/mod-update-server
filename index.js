@@ -71,6 +71,9 @@ const updateSchema = Joi.object().keys({
   gameVersion: Joi.string()
     .min(1)
     .required(),
+  modLoader: Joi.string()
+    .valid('forge', 'fabric')
+    .default('forge'),
   version: Joi.string()
     .min(1)
     .required(),
@@ -652,7 +655,8 @@ const amountSchema = Joi.number()
       .aggregate([
         {
           $match: {
-            mod: mod._id
+            mod: mod._id,
+            modLoader: 'forge'
           }
         },
         {
