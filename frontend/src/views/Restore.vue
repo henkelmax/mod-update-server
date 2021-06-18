@@ -154,6 +154,7 @@ export default {
             {
               publishDate: update.publishDate,
               gameVersion: update.gameVersion,
+              modLoader: update.modLoader,
               version: update.version,
               updateMessages: update.updateMessages,
               releaseType: update.releaseType,
