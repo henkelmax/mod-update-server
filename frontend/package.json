@@ -9,14 +9,14 @@
   "dependencies": {
     "@mdi/font": "^5.9.55",
     "axios": "^0.21.1",
-    "core-js": "^3.14.0",
+    "core-js": "^3.16.2",
     "js-file-download": "^0.4.12",
     "moment": "^2.29.1",
     "roboto-fontface": "^0.10.0",
     "v-clipboard": "^2.2.3",
     "vue": "^2.6.14",
-    "vue-router": "^3.5.1",
-    "vuetify": "^2.5.3"
+    "vue-router": "^3.5.2",
+    "vuetify": "^2.5.8"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.13",
@@ -24,11 +24,11 @@
     "@vue/cli-service": "^4.5.13",
     "@vue/eslint-config-airbnb": "^5.3.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.28.0",
-    "eslint-plugin-vue": "^7.11.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^7.16.0",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
-    "vue-cli-plugin-vuetify": "^2.4.1",
+    "vue-cli-plugin-vuetify": "^2.4.2",
     "vue-template-compiler": "^2.6.14",
     "vuetify-loader": "^1.7.2"
   }
