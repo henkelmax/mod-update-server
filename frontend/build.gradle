@@ -1,0 +1,11 @@
+plugins {
+    id "com.github.node-gradle.node" version "3.2.1"
+}
+
+task serve(type: YarnTask) {
+    args = ['serve']
+}
+
+task build(type: YarnTask) {
+    args = ['build']
+}

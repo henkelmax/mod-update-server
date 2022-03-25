@@ -18,6 +18,7 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'operator-linebreak': 'off',
     'implicit-arrow-linebreak': 'off',
+    'no-await-in-loop': 'off',
     'no-plusplus': [
       'error',
       {

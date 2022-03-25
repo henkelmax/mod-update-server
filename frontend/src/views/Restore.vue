@@ -141,34 +141,29 @@ export default {
         }
       );
 
-      if (response.status !== 200) {
+      if (response.status < 200 || response.status >= 300) {
         throw new Error(`Could not add mod '${mod.name}'`);
       }
 
-      const promises = [];
-
       for (const update of mod.updates) {
-        promises.push(
-          axios.post(
-            `${this.server}/updates/${mod.modID}`,
-            {
-              publishDate: update.publishDate,
-              gameVersion: update.gameVersion,
-              modLoader: update.modLoader,
-              version: update.version,
-              updateMessages: update.updateMessages,
-              releaseType: update.releaseType,
-              tags: update.tags
-            },
-            {
-              headers: {
-                apikey: sessionStorage.apiKey
-              }
+        await axios.post(
+          `${this.server}/updates/${mod.modID}`,
+          {
+            publishDate: update.publishDate,
+            gameVersion: update.gameVersion,
+            modLoader: update.modLoader,
+            version: update.version,
+            updateMessages: update.updateMessages,
+            releaseType: update.releaseType,
+            tags: update.tags
+          },
+          {
+            headers: {
+              apikey: sessionStorage.apiKey
             }
-          )
+          }
         );
       }
-      await Promise.all(promises);
     }
   }
 };

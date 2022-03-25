@@ -9,24 +9,11 @@ COPY frontend .
 
 RUN yarn build
 
+FROM openjdk:17-jdk-alpine
 
-FROM node:12-alpine
+COPY --from=frontend-builder dist /var/www/
+COPY . .
 
-WORKDIR /forge-update
+RUN ./gradlew backend:build
 
-COPY package.json .
-COPY yarn.lock .
-
-RUN yarn install --production --silent
-
-COPY *.js .
-COPY --from=frontend-builder dist frontend/dist
-
-ENV DB_IP=localhost
-ENV DB_PORT=27017
-ENV DB_NAME=updates
-ENV PORT=80
-
-ENTRYPOINT []
-
-CMD ["node","index.js"]
+ENTRYPOINT ["java","-jar","backend/build/libs/app.jar"]

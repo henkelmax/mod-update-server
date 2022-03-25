@@ -1,0 +1,45 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'de.maxhenkel'
+archivesBaseName = 'modupdateserver'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+bootRun {
+    environment "spring_profiles_active", "dev"
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    runtimeOnly 'org.aspectj:aspectjrt:1.9.9'
+    implementation 'org.aspectj:aspectjtools:1.9.9'
+
+    implementation 'org.springframework:spring-context'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'org.hibernate.validator:hibernate-validator'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks {
+    bootJar {
+        archiveFileName.set("app.jar")
+    }
+}
