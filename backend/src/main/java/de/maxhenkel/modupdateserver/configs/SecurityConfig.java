@@ -1,5 +1,6 @@
 package de.maxhenkel.modupdateserver.configs;
 
+import de.maxhenkel.modupdateserver.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -43,14 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
-                .withUser(getEnv("LOGIN_USERNAME", "admin"))
-                .password("{noop}%s".formatted(getEnv("LOGIN_PASSWORD", "admin")))
+                .withUser(Utils.getEnv("LOGIN_USERNAME", "admin"))
+                .password("{noop}%s".formatted(Utils.getEnv("LOGIN_PASSWORD", "admin")))
                 .roles(WEB_UI_ROLE);
     }
 
-    private String getEnv(String env, String def) {
-        String var = System.getenv(env);
-        return var == null ? def : var;
-    }
+
 
 }

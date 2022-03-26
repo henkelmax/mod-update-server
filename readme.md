@@ -72,6 +72,7 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 
 ### Prerequisites
 
+- [Java 17](https://www.oracle.com/java/technologies/downloads/#java17)
 - [Node.js](https://nodejs.org/)
 - [Yarn](https://yarnpkg.com/)
 - [MongoDB](https://www.mongodb.com/)
@@ -79,48 +80,31 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 ### Installation
 
 ```sh
-yarn install
-
-cd frontend
-yarn install
+./gradlew init
+./gradlew frontend:yarn
 ```
 
 ### Running the project in development
 
 ```sh
-yarn mongo
-yarn dev
-
-cd frontend
-yarn serve
+./gradlew runMongoDB
+./gradlew backend:bootRun
+./gradlew frontend:serve
 ```
 
-or
 
-```sh
-mongod --dbpath <PATH_TO_DB>
-yarn dev
-
-cd frontend
-yarn serve
-```
-
-The REST API should be available at port 8088 and the web interface is usually available at port 8080 (If not already in use).
+The REST API should be available at port 8088 and the web interface is usually available at port 8080 (If not already in
+use).
 
 ## Environment Variables
 
 | Variable         | Description                                                     | Default Value |
-| ---------------- | --------------------------------------------------------------- | ------------- |
+| ---------------- | --------------------------------------------------------------- |---------------|
 | `DB_IP`          | The IP of the MongoDB database                                  | `localhost`   |
 | `DB_PORT`        | The port of the MongoDB database                                | `27017`       |
 | `DB_NAME`        | The database name                                               | `updates`     |
 | `PORT`           | The webserver port                                              | `8088`        |
 | `MASTER_KEY`     | The master apiKey (e.g. `62387f34-7678-4737-bfc4-2cb600337541`) |               |
-| `LOGIN_USERNAME` | The username for the web UI login                               |               |
-| `LOGIN_PASSWORD` | The password for the web UI login                               |               |
+| `LOGIN_USERNAME` | The username for the web UI login                               | `admin`       |
+| `LOGIN_PASSWORD` | The password for the web UI login                               | `admin`       |
 
-## Web UI
-
-### Login
-
-You can log in to the web UI via the credentials provided by the environment variables or with the username `apikey` and your apikey as password.

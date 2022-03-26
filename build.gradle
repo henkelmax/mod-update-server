@@ -1,0 +1,11 @@
+task runMongoDB(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'cmd', '/c', 'mongod --dbpath ./mongo'
+    } else {
+        commandLine 'sh', '-c', 'mongod --dbpath ./mongo'
+    }
+}
+
+tasks.runMongoDB.configure({
+    group = 'mongodb'
+})

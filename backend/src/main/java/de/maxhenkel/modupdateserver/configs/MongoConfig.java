@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import de.maxhenkel.modupdateserver.Utils;
 import org.bson.UuidRepresentation;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
@@ -16,12 +17,12 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Override
     protected String getDatabaseName() {
-        return "updates";
+        return Utils.getEnv("DB_NAME", "updates");
     }
 
     @Override
     public MongoClient mongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
+        ConnectionString connectionString = new ConnectionString("mongodb://%s:%s".formatted(Utils.getEnv("DB_IP", "localhost"), Utils.getEnv("DB_PORT", "27017")));
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .uuidRepresentation(UuidRepresentation.STANDARD)
