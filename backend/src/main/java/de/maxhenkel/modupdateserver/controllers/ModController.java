@@ -5,6 +5,7 @@ import com.mongodb.client.result.UpdateResult;
 import de.maxhenkel.modupdateserver.annotations.ValidateApiKey;
 import de.maxhenkel.modupdateserver.entities.Mod;
 import de.maxhenkel.modupdateserver.entities.ModWithUpdateCount;
+import de.maxhenkel.modupdateserver.entities.ModWithoutModId;
 import de.maxhenkel.modupdateserver.entities.Update;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
@@ -94,7 +95,7 @@ public class ModController {
 
     @ValidateApiKey
     @PostMapping("/mods/edit/{modID}")
-    public ResponseEntity<?> editUpdate(@PathVariable("modID") String modID, @Valid @RequestBody Mod mod) {
+    public ResponseEntity<?> editUpdate(@PathVariable("modID") String modID, @Valid @RequestBody ModWithoutModId mod) {
         Optional<Mod> optionalMod = modRepository.findByModID(modID);
         if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
