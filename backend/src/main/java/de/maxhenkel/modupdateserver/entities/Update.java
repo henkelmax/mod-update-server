@@ -1,5 +1,6 @@
 package de.maxhenkel.modupdateserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.maxhenkel.modupdateserver.serializers.ObjectIdSerializer;
@@ -22,6 +23,7 @@ public class Update {
     @JsonProperty("_id")
     private ObjectId id;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private Date publishDate = new Date();
     @NotNull
     @Size(min = 1)

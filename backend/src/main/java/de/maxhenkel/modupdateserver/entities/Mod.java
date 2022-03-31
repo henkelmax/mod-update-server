@@ -34,6 +34,16 @@ public class Mod {
     @NotNull
     private String issueURL;
 
+    public Mod(Mod mod) {
+        this.id = mod.getId();
+        this.modID = mod.getModID();
+        this.name = mod.getName();
+        this.description = mod.getDescription();
+        this.websiteURL = mod.getWebsiteURL();
+        this.downloadURL = mod.getDownloadURL();
+        this.issueURL = mod.getIssueURL();
+    }
+
     public Mod(String modID, String name, String description, String websiteURL, String downloadURL, String issueURL) {
         this.modID = modID;
         this.name = name;
