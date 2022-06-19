@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
                 .addResourceHandler("/**")
-                .addResourceLocations("file:../frontend/dist/", "/var/www/")
+                .addResourceLocations("file:../frontend/dist/", "file:/var/www/")
                 .setCachePeriod(0); //TODO only cache in production
     }
 
