@@ -1,8 +1,10 @@
 package de.maxhenkel.modupdateserver.entities;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.maxhenkel.modupdateserver.serializers.DateDeserializer;
+import de.maxhenkel.modupdateserver.serializers.DateSerializer;
 import de.maxhenkel.modupdateserver.serializers.ObjectIdSerializer;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,7 +25,8 @@ public class Update {
     @JsonProperty("_id")
     private ObjectId id;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @JsonSerialize(using = DateSerializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
     private Date publishDate = new Date();
     @NotNull
     @Size(min = 1)

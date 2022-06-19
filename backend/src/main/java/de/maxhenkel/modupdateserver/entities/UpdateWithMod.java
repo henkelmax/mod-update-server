@@ -1,7 +1,10 @@
 package de.maxhenkel.modupdateserver.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.maxhenkel.modupdateserver.serializers.DateDeserializer;
+import de.maxhenkel.modupdateserver.serializers.DateSerializer;
 import de.maxhenkel.modupdateserver.serializers.ObjectIdSerializer;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,6 +22,8 @@ public class UpdateWithMod {
     @JsonProperty("_id")
     private ObjectId id;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonSerialize(using = DateSerializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
     private Date publishDate;
     private String gameVersion;
     private String version;
