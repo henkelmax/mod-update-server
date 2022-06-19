@@ -49,7 +49,7 @@ public class ForgeController {
         Aggregation agg = newAggregation(
                 match(Criteria.where("mod").is(mod.getId())),
                 match(Criteria.where("modLoader").is("forge")),
-                sort(Sort.Direction.DESC, "publishDate")
+                sort(Sort.Direction.ASC, "publishDate")
         );
 
         AggregationResults<Update> aggregate = mongoTemplate.aggregate(agg, Update.class, Update.class);
