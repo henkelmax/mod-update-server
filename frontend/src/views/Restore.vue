@@ -48,7 +48,6 @@
 
 <script>
 import axios from "axios";
-import moment from "moment";
 
 export default {
   components: {},
@@ -65,7 +64,7 @@ export default {
           !value ||
           !value.name ||
           value.name.toLowerCase().endsWith(".json") ||
-          "The file has to be a .json file",
+          "The file has to be a .json file"
       ]
     };
   },
@@ -100,70 +99,20 @@ export default {
             throw new Error("Data is not empty");
           }
 
-          const promises = [];
-
-          for (const mod of json.mods) {
-            const promise = this.restoreMod(mod);
-            promises.push(promise);
-            promise
-              .then(() => {})
-              .catch((err) => {
-                this.error = err;
-                this.snackbar = true;
-              });
-          }
-          Promise.all(promises).then(() => {
-            this.back();
+          await axios.post(`${this.server}/restore`, json, {
+            headers: {
+              apikey: sessionStorage.apiKey
+            }
           });
+
+          this.back();
         } catch (err) {
-          this.error = err;
+          this.error = `Could not restore data: ${err?.response?.data?.message}`;
           this.snackbar = true;
         }
         this.processing = false;
       };
       reader.readAsText(this.file);
-    },
-    async restoreMod(mod) {
-      const response = await axios.post(
-        `${this.server}/mods/add`,
-        {
-          modID: mod.modID,
-          name: mod.name,
-          description: mod.description,
-          websiteURL: mod.websiteURL,
-          downloadURL: mod.downloadURL,
-          issueURL: mod.issueURL
-        },
-        {
-          headers: {
-            apikey: sessionStorage.apiKey
-          },
-        }
-      );
-
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(`Could not add mod '${mod.name}'`);
-      }
-
-      for (const update of mod.updates) {
-        await axios.post(
-          `${this.server}/updates/${mod.modID}`,
-          {
-            publishDate: update.publishDate,
-            gameVersion: update.gameVersion,
-            modLoader: update.modLoader,
-            version: update.version,
-            updateMessages: update.updateMessages,
-            releaseType: update.releaseType,
-            tags: update.tags
-          },
-          {
-            headers: {
-              apikey: sessionStorage.apiKey
-            }
-          }
-        );
-      }
     }
   }
 };

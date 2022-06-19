@@ -58,29 +58,17 @@ export default {
     async backup() {
       this.processing = true;
       try {
-        const backup = { backupDate: moment().format(), mods: [] };
-
-        const promises = [];
-
-        const mods = (await axios.get(`${this.server}/mods`)).data;
-        for (const mod of mods) {
-          const promise = axios.get(
-            `${this.server}/updates/${mod.modID}?amount=${Number.MAX_SAFE_INTEGER}`
-          );
-          promises.push(promise);
-
-          promise.then((response) => {
-            mod.updates = response.data;
-            backup.mods.push(mod);
-          });
-        }
-        const x = await Promise.all(promises);
+        const backup = await axios.get(`${this.server}/backup`, {
+          headers: {
+            apikey: sessionStorage.apiKey
+          }
+        });
         download(
-          JSON.stringify(backup, null, 2),
+          JSON.stringify(backup.data, null, 2),
           `backup_${moment().format("YYYY-MM-DD-HH:mm")}.json`
         );
       } catch (err) {
-        this.error = "Could not backup data";
+        this.error = `Could not backup data: ${err?.response?.data?.message}`;
         this.snackbar = true;
       }
       this.processing = false;
