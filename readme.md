@@ -6,7 +6,6 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 
 ## Useful Links
 
-- [Docker Image](https://hub.docker.com/r/henkelmax/mod-update-server)
 - [Forge Update Gradle Plugin](https://github.com/henkelmax/forge-update-plugin)
 - [Forge Update Checker](https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/)
 
@@ -66,6 +65,40 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 {
   "mods": ["examplemod"]                                                // The mods that this key has access to ("*" for every mod)
 }
+```
+
+## Usage
+
+**Docker Compose**
+
+```yml
+version: "3.9"
+
+services:
+  update-server:
+    build: "https://github.com/henkelmax/mod-update-server.git#2.0.0"
+    restart: "always"
+    container_name: "update-server"
+    environment:
+      MASTER_KEY: "b13c2739-f6e4-4123-b486-8f44c3f53bac" # Please generate your own random UUID
+      DB_IP: "update-mongodb"
+    networks:
+      - "update-server"
+    depends_on:
+      - "update-mongodb"
+    ports:
+      - "8088:8088" # Ideally, you need a reverse proxy to serve via HTTPS
+  update-mongodb:
+    image: "mongo:4.4"
+    restart: "always"
+    container_name: "update-mongodb"
+    volumes:
+      - "/path/to/your/db/files:/data/db"
+    networks:
+      - "update-server"
+networks:
+  update-server:
+    internal: true
 ```
 
 ## Development Setup
