@@ -6,7 +6,7 @@ plugins {
 
 group = 'de.maxhenkel'
 archivesBaseName = 'modupdateserver'
-version = '2.0.0'
+version = project_version
 sourceCompatibility = '17'
 
 repositories {
