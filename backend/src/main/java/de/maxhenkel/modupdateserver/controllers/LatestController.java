@@ -50,7 +50,7 @@ public class LatestController {
             versions.put(update.getGameVersion(), update);
         }
 
-        return new ResponseEntity<>(versions, HttpStatus.OK);
+        return new ResponseEntity<>(versions.values(), HttpStatus.OK);
     }
 
 }
