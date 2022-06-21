@@ -38,7 +38,7 @@ This can be used directly for the [Forge Update Checker](https://mcforge.readthe
 {
   "publishDate": "2019-10-10T14:48:00",                               // The publishing date (used to order the updates).
   "gameVersion": "1.14.4",                                            // The game version.
-  "modLoader": "forge",                                               // The mod loader.
+  "modLoader": "forge",                                               // The mod loader [forge, fabric]. Default value: "forge".
   "version": "1.0.0",                                                 // The mod version.
   "updateMessages": ["Updated to 1.14.4", "Added readme.md"],         // The update messages (Changelog etc.).
   "releaseType": "release",                                           // The release type [alpha, beta, release]. Default value: "release".
