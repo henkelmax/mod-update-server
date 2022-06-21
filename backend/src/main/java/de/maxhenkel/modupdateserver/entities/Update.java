@@ -42,7 +42,7 @@ public class Update {
     @NotNull
     private String[] tags;
     @NotNull
-    @Pattern(regexp = "forge|fabric")
+    @Pattern(regexp = "forge|fabric|quilt")
     private String modLoader = "forge";
     @JsonSerialize(using = ObjectIdSerializer.class)
     private ObjectId mod;

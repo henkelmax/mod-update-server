@@ -60,6 +60,7 @@
                 <v-radio-group row v-model="update.modLoader" :mandatory="true">
                   <v-radio label="Forge" value="forge"></v-radio>
                   <v-radio label="Fabric" value="fabric"></v-radio>
+                  <v-radio label="Quilt" value="quilt"></v-radio>
                 </v-radio-group>
               </v-col>
 
