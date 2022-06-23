@@ -9,27 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class ResponseStatusExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<JsonResponse> generateNotFoundException(ResponseStatusException e) {
-        return new ResponseEntity<>(new JsonResponse(e.getReason()), e.getStatus());
-    }
-
-    private static class JsonResponse {
-        private String message;
-
-        public JsonResponse() {
-        }
-
-        public JsonResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
+    public ResponseEntity<Error> generateNotFoundException(ResponseStatusException e) {
+        return new ResponseEntity<>(new Error(e.getReason()), e.getStatus());
     }
 
 }
