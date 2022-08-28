@@ -20,39 +20,39 @@ export default new Router({
       path: '/mod',
       name: 'mod',
       props: { modID: '' },
-      component: () => import('./views/Mod.vue')
+      component: () => import(/* webpackChunkName: "mod" */ './views/Mod.vue')
     },
     {
       path: '/updates',
       name: 'updates',
       props: { modID: '' },
-      component: () => import('./views/Updates.vue')
+      component: () => import(/* webpackChunkName: "updates" */ './views/Updates.vue')
     },
     {
       path: '/update',
       name: 'update',
       props: { modID: '', updateID: '' },
-      component: () => import('./views/Update.vue')
+      component: () => import(/* webpackChunkName: "update" */ './views/Update.vue')
     },
     {
       path: '/apikeys',
       name: 'apikeys',
-      component: () => import('./views/ApiKeys.vue')
+      component: () => import(/* webpackChunkName: "apikeys" */ './views/ApiKeys.vue')
     },
     {
       path: '/import',
       name: 'import',
-      component: () => import('./views/Import.vue')
+      component: () => import(/* webpackChunkName: "import" */ './views/Import.vue')
     },
     {
       path: '/backup',
       name: 'backup',
-      component: () => import('./views/Backup.vue')
+      component: () => import(/* webpackChunkName: "backup" */ './views/Backup.vue')
     },
     {
       path: '/restore',
       name: 'restore',
-      component: () => import('./views/Restore.vue')
+      component: () => import(/* webpackChunkName: "restore" */ './views/Restore.vue')
     }
   ]
 });
