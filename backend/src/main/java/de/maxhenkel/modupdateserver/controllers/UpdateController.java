@@ -8,6 +8,9 @@ import de.maxhenkel.modupdateserver.entities.Update;
 import de.maxhenkel.modupdateserver.entities.UpdateWithMod;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +26,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
 

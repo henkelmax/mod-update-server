@@ -4,6 +4,7 @@ import com.mongodb.client.result.DeleteResult;
 import de.maxhenkel.modupdateserver.annotations.ValidateMasterKey;
 import de.maxhenkel.modupdateserver.entities.ApiKey;
 import de.maxhenkel.modupdateserver.repositories.ApiKeyRepository;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 

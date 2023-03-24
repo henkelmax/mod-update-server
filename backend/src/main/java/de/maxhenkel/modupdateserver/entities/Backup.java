@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.maxhenkel.modupdateserver.serializers.DateDeserializer;
 import de.maxhenkel.modupdateserver.serializers.DateSerializer;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 

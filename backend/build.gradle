@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.4'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.0.5'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
 }
 
@@ -25,15 +25,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    runtimeOnly 'org.aspectj:aspectjrt:1.9.9'
-    implementation 'org.aspectj:aspectjtools:1.9.9'
+    runtimeOnly 'org.aspectj:aspectjrt:1.9.19'
+    implementation 'org.aspectj:aspectjtools:1.9.19'
 
     implementation 'org.springframework:spring-context'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.hibernate.validator:hibernate-validator'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
 }
 
 tasks.named('test') {

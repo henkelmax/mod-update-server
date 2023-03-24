@@ -3,13 +3,13 @@ package de.maxhenkel.modupdateserver.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.maxhenkel.modupdateserver.serializers.ObjectIdSerializer;
+import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Document(collection = "apiKeys")

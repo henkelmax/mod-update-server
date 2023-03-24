@@ -6,15 +6,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.maxhenkel.modupdateserver.serializers.DateDeserializer;
 import de.maxhenkel.modupdateserver.serializers.DateSerializer;
 import de.maxhenkel.modupdateserver.serializers.ObjectIdSerializer;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Document(collection = "updates")

@@ -7,6 +7,7 @@ import de.maxhenkel.modupdateserver.entities.Mod;
 import de.maxhenkel.modupdateserver.entities.ModWithUpdates;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -19,8 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
-
-import javax.validation.constraints.NotNull;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;

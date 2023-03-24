@@ -2,6 +2,7 @@ package de.maxhenkel.modupdateserver.aspects;
 
 import de.maxhenkel.modupdateserver.entities.ApiKey;
 import de.maxhenkel.modupdateserver.repositories.ApiKeyRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -16,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;

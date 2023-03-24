@@ -9,6 +9,7 @@ import de.maxhenkel.modupdateserver.entities.ModWithoutModId;
 import de.maxhenkel.modupdateserver.entities.Update;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
+import jakarta.validation.Valid;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
