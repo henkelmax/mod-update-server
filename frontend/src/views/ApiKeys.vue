@@ -127,7 +127,7 @@ export default {
       axios
         .post(
           `${this.server}/apikeys/add`,
-          { mods: this.apiKeyToAdd.split(",") },
+          this.apiKeyToAdd.split(","),
           {
             headers: {
               apikey: sessionStorage.apiKey
