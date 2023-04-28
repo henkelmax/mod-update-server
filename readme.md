@@ -2,12 +2,12 @@
 
 A server for Minecraft modders that manages all your mod updates.
 It provides a web interface and REST API to manage everything.
-This can be used directly for the [Forge Update Checker](https://docs.minecraftforge.net/en/1.19.x/misc/updatechecker/).
+This can be used directly for the [Forge Update Checker](https://docs.minecraftforge.net/en/1.19.2/misc/updatechecker/).
 
 ## Useful Links
 
-- [Forge Update Gradle Plugin](https://github.com/henkelmax/forge-update-plugin)
-- [Forge Update Checker](https://docs.minecraftforge.net/en/1.19.x/misc/updatechecker/)
+- [Mod Update Gradle Plugin](https://github.com/henkelmax/mod-update-plugin)
+- [Forge Update Checker](https://docs.minecraftforge.net/en/1.19.2/misc/updatechecker/)
 
 ---
 
