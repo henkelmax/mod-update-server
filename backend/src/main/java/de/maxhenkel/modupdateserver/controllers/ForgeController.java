@@ -36,7 +36,17 @@ public class ForgeController {
 
     @Cacheable(value = "forge", cacheManager = "cacheManager")
     @GetMapping("/forge/{modID}")
-    public ResponseEntity<?> modUpdates(@PathVariable("modID") String modID) {
+    public ResponseEntity<?> forgModUpdates(@PathVariable("modID") String modID) {
+        return modUpdatesForLoader("forge", modID);
+    }
+
+    @Cacheable(value = "neoforge", cacheManager = "cacheManager")
+    @GetMapping("/neoforge/{modID}")
+    public ResponseEntity<?> neoForgeModUpdates(@PathVariable("modID") String modID) {
+        return modUpdatesForLoader("neoforge", modID);
+    }
+
+    private ResponseEntity<?> modUpdatesForLoader(String loader, String modID) {
         Optional<Mod> optionalMod = modRepository.findByModID(modID);
         if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
@@ -48,7 +58,7 @@ public class ForgeController {
 
         Aggregation agg = newAggregation(
                 match(Criteria.where("mod").is(mod.getId())),
-                match(Criteria.where("modLoader").is("forge")),
+                match(Criteria.where("modLoader").is(loader)),
                 sort(Sort.Direction.ASC, "publishDate")
         );
 
