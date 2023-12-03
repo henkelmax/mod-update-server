@@ -9,6 +9,8 @@ import de.maxhenkel.modupdateserver.serializers.ObjectIdSerializer;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.FieldType;
@@ -17,6 +19,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
 @Document(collection = "updates")
 public class Update {
 
@@ -47,90 +51,4 @@ public class Update {
     @JsonSerialize(using = ObjectIdSerializer.class)
     private ObjectId mod;
 
-    public Update(Date publishDate, String gameVersion, String version, String[] updateMessages, String releaseType, String[] tags, String modLoader, ObjectId mod) {
-        this.publishDate = publishDate;
-        this.gameVersion = gameVersion;
-        this.version = version;
-        this.updateMessages = updateMessages;
-        this.releaseType = releaseType;
-        this.tags = tags;
-        this.modLoader = modLoader;
-        this.mod = mod;
-    }
-
-    public Update() {
-
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
-    public Date getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
-    }
-
-    public String getGameVersion() {
-        return gameVersion;
-    }
-
-    public void setGameVersion(String gameVersion) {
-        this.gameVersion = gameVersion;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String[] getUpdateMessages() {
-        return updateMessages;
-    }
-
-    public void setUpdateMessages(String[] updateMessages) {
-        this.updateMessages = updateMessages;
-    }
-
-    public String getReleaseType() {
-        return releaseType;
-    }
-
-    public void setReleaseType(String releaseType) {
-        this.releaseType = releaseType;
-    }
-
-    public String[] getTags() {
-        return tags;
-    }
-
-    public void setTags(String[] tags) {
-        this.tags = tags;
-    }
-
-    public String getModLoader() {
-        return modLoader;
-    }
-
-    public void setModLoader(String modLoader) {
-        this.modLoader = modLoader;
-    }
-
-    public ObjectId getMod() {
-        return mod;
-    }
-
-    public void setMod(ObjectId mod) {
-        this.mod = mod;
-    }
 }

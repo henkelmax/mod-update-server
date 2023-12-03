@@ -31,6 +31,9 @@ dependencies {
     runtimeOnly "org.aspectj:aspectjrt:${aspectjrt_version}"
     implementation "org.aspectj:aspectjtools:${aspectjrt_version}"
 
+    implementation "org.projectlombok:lombok:${lombok_version}"
+    annotationProcessor "org.projectlombok:lombok:${lombok_version}"
+
     implementation 'org.springframework:spring-context'
     implementation "com.google.guava:guava:${guava_version}"
     implementation 'org.hibernate.validator:hibernate-validator'

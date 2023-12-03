@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.maxhenkel.modupdateserver.serializers.DateDeserializer;
 import de.maxhenkel.modupdateserver.serializers.DateSerializer;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 public class Backup {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -20,32 +24,7 @@ public class Backup {
     @NotNull
     private List<ModWithUpdates> mods;
 
-    public Backup(Date backupDate, List<ModWithUpdates> mods) {
-        this.backupDate = backupDate;
-        this.mods = mods;
-    }
-
     public Backup(List<ModWithUpdates> mods) {
-        this.mods = mods;
-    }
-
-    public Backup() {
-
-    }
-
-    public Date getBackupDate() {
-        return backupDate;
-    }
-
-    public void setBackupDate(Date backupDate) {
-        this.backupDate = backupDate;
-    }
-
-    public List<ModWithUpdates> getMods() {
-        return mods;
-    }
-
-    public void setMods(List<ModWithUpdates> mods) {
         this.mods = mods;
     }
 

@@ -1,21 +1,12 @@
 package de.maxhenkel.modupdateserver.entities;
 
+import lombok.*;
+
+@Data
+@NoArgsConstructor
 public class Error {
 
+    private int statusCode;
     private String message;
 
-    public Error(String message) {
-        this.message = message;
-    }
-
-    public Error() {
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

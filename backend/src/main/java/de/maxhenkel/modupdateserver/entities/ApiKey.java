@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.maxhenkel.modupdateserver.serializers.ObjectIdSerializer;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -12,6 +14,8 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.UUID;
 
+@Data
+@NoArgsConstructor
 @Document(collection = "apiKeys")
 public class ApiKey {
 
@@ -30,31 +34,4 @@ public class ApiKey {
         this.mods = mods;
     }
 
-    public ApiKey() {
-
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
-    public UUID getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(UUID apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public String[] getMods() {
-        return mods;
-    }
-
-    public void setMods(String[] mods) {
-        this.mods = mods;
-    }
 }
