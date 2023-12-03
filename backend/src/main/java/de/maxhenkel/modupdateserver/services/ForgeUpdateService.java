@@ -37,20 +37,14 @@ public class ForgeUpdateService {
     @Autowired
     private MeterRegistry meterRegistry;
 
-    private final Counter.Builder updateCheckCacheMissCounter;
-
-    public ForgeUpdateService() {
-        updateCheckCacheMissCounter = Counter.builder("update_check.cache_miss");
-    }
-
     @Cacheable(value = "mod_updates", cacheManager = "cacheManager")
-    public ResponseEntity<?> modUpdatesForLoader(String loader, String modID) {
+    public ResponseEntity<Map<String, Object>> modUpdatesForLoader(String loader, String modID) {
         Optional<Mod> optionalMod = modRepository.findByModID(modID);
         if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
 
-        updateCheckCacheMissCounter.tag("loader", loader).tag("modID", modID).register(meterRegistry).increment();
+        Counter.builder("requests.update_check.cache_miss").tag("loader", loader).tag("modID", modID).register(meterRegistry).increment();
 
         Mod mod = optionalMod.get();
 
