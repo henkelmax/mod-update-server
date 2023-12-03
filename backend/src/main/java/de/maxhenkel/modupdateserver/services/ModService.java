@@ -134,6 +134,10 @@ public class ModService {
         return new ModWithUpdateCount(mod, updates);
     }
 
+    /**
+     * @param modID the mod ID
+     * @throws ResponseStatusException if the mod or update doesn't exist or the update couldn't get deleted
+     */
     public void deleteUpdate(String modID) {
         Optional<Mod> optionalMod = modRepository.findByModID(modID);
         if (optionalMod.isEmpty()) {
