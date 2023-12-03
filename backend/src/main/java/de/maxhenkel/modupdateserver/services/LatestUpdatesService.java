@@ -1,41 +1,34 @@
-package de.maxhenkel.modupdateserver.controllers;
+package de.maxhenkel.modupdateserver.services;
 
 import de.maxhenkel.modupdateserver.entities.Mod;
 import de.maxhenkel.modupdateserver.entities.Update;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-@Controller
-public class LatestController {
+@Service
+public class LatestUpdatesService {
 
     @Autowired
     private ModRepository modRepository;
 
     @Autowired
-    MongoTemplate mongoTemplate;
+    private MongoTemplate mongoTemplate;
 
-    @Cacheable(value = "latest", cacheManager = "cacheManager")
-    @GetMapping("/latest/{modID}")
-    public ResponseEntity<?> modUpdates(@PathVariable("modID") String modID) {
+    public boolean doesModExist(String modID) {
+        return modRepository.findByModID(modID).isPresent();
+    }
+
+    public Collection<Update> getModUpdates(String modID) {
         Optional<Mod> optionalMod = modRepository.findByModID(modID);
         if (optionalMod.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
+            return Collections.emptyList();
         }
         Mod mod = optionalMod.get();
 
@@ -44,13 +37,13 @@ public class LatestController {
         query.with(Sort.by(Sort.Direction.ASC, "publishDate"));
         List<Update> updates = mongoTemplate.find(query, Update.class);
 
-        Map<String, Object> versions = new HashMap<>();
+        Map<String, Update> versions = new HashMap<>();
 
         for (Update update : updates) {
             versions.put(update.getGameVersion(), update);
         }
 
-        return new ResponseEntity<>(versions.values(), HttpStatus.OK);
+        return versions.values();
     }
 
 }
