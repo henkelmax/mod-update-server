@@ -2,3 +2,11 @@ server:
   error:
 #    include-stacktrace: never
     path: /error
+
+management:
+  server:
+    port: 8070
+  endpoints:
+    web:
+      exposure:
+        include: [ "prometheus" ]
