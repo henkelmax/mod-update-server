@@ -1,4 +1,4 @@
-task runMongoDB(type: Exec) {
+tasks.register('runMongoDB', Exec) {
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
         commandLine 'cmd', '/c', 'mongod --dbpath ./mongo'
     } else {
