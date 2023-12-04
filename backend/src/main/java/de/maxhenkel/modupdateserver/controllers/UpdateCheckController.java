@@ -1,7 +1,8 @@
 package de.maxhenkel.modupdateserver.controllers;
 
-import de.maxhenkel.modupdateserver.services.ForgeUpdateService;
+import de.maxhenkel.modupdateserver.dtos.UpdateCheckResponse;
 import de.maxhenkel.modupdateserver.services.ModService;
+import de.maxhenkel.modupdateserver.services.UpdateCheckService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,34 +13,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Map;
-
 @Controller
-public class ForgeController {
+public class UpdateCheckController {
 
     @Autowired
-    private ForgeUpdateService forgeUpdateService;
+    private UpdateCheckService updateCheckService;
     @Autowired
     private ModService modService;
     @Autowired
     private MeterRegistry meterRegistry;
 
-    @GetMapping("/forge/{modID}")
-    public ResponseEntity<Map<String, Object>> forgeModUpdates(@PathVariable("modID") String modID) {
-        return modUpdatesForLoader("forge", modID);
-    }
-
-    @GetMapping("/neoforge/{modID}")
-    public ResponseEntity<Map<String, Object>> neoForgeModUpdates(@PathVariable("modID") String modID) {
-        return modUpdatesForLoader("neoforge", modID);
-    }
-
-    public ResponseEntity<Map<String, Object>> modUpdatesForLoader(String loader, String modID) {
+    @GetMapping("/check/{loader:forge|neoforge|fabric|quilt}/{modID}")
+    public ResponseEntity<UpdateCheckResponse> forgeModUpdates(@PathVariable("loader") String loader, @PathVariable("modID") String modID) {
         if (!modService.doesModExist(modID)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
         Counter.builder("requests.update_check").tag("loader", loader).tag("mod_id", modID).register(meterRegistry).increment();
-        return new ResponseEntity<>(forgeUpdateService.modUpdatesForLoader(loader, modID), HttpStatus.OK);
+        return new ResponseEntity<>(updateCheckService.modUpdatesForLoader(loader, modID), HttpStatus.OK);
     }
 
 }
