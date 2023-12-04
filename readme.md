@@ -14,7 +14,7 @@ This can be used directly for the [Forge Update Checker](https://docs.minecraftf
 ## Requests
 
 | Method   | Path                                | Description                                                                                                               |
-| -------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| -------- |-------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
 | `GET`    | `/mods`                             | List all mods.                                                                                                            |
 | `GET`    | `/mods/MODNAME`                     | Get a specific mod.                                                                                                       |
 | `GET`    | `/updates?amount=16&page=0`         | Show update entries for all mods. Optional query parameters: `amount` for the update count per page, `page` for the page. |
@@ -27,6 +27,7 @@ This can be used directly for the [Forge Update Checker](https://docs.minecraftf
 | `POST`   | `/mods/add`                         | Add a new mod. Requires an apikey in header. See [Mod](#mod).                                                             |
 | `POST`   | `/mods/edit/MODNAME`                | Edit an existing mod. Requires an apikey in header. See [Mod](#mod).                                                      |
 | `GET`    | `/forge/MODNAME`                    | Forge update check format.                                                                                                |
+| `GET`    | `/check/LOADER/MODNAME`             | A general purpose update check format.                                                                                    |
 | `GET`    | `/latest/MODNAME`                   | General update format.                                                                                                    |
 | `GET`    | `/apikeys`                          | List all apikeys.                                                                                                         |
 | `POST`   | `/apikeys/add`                      | Add a new apikey. See [ApiKey](#apikey).                                                                                  |
