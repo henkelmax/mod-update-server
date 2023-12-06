@@ -33,25 +33,18 @@
         >
       </v-card-actions>
     </v-card>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <template v-slot:actions>
-        <v-btn dark text @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import router from "@/router";
-import { getMods, restore, getErrorMessage } from "@/services";
+import { getMods, restore } from "@/services";
+import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
 
 const valid = ref(false);
 const file = ref(null);
-const snackbar = ref(false);
 const processing = ref(false);
-const error = ref("");
 
 const rules = [
   (value) => !!value || "This field is required",
@@ -68,8 +61,7 @@ function back() {
 
 function restoreBackup() {
   if (!valid.value) {
-    snackbar.value = true;
-    error.value = "Please check your fields";
+    showErrorMessage("Please check your fields");
     return;
   }
   const reader = new FileReader();
@@ -93,7 +85,7 @@ function restoreBackup() {
 
       back();
     } catch (err) {
-      showError(getErrorMessage(err));
+      showHttpErrorMessage(err);
     }
     processing.value = false;
   };
@@ -106,8 +98,7 @@ function restoreBackup() {
 }
 
 function showError(message) {
-  error.value = message;
-  snackbar.value = true;
+  showErrorMessage(message);
   processing.value = false;
 }
 </script>

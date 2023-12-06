@@ -62,27 +62,20 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <template v-slot:actions>
-        <v-btn dark text @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { getMods, deleteMod, getErrorMessage } from "@/services";
-import { logout } from "@/stores/application";
+import { getMods, deleteMod } from "@/services";
+import { logout } from "@/stores/applicationStore";
+import { showHttpErrorMessage } from "@/services/messages";
 import router from "@/router";
 
 const mods = ref([]);
 const searchText = ref("");
 const dialog = ref(false);
 const modToDelete = ref({});
-const snackbar = ref(false);
-const error = ref("");
 
 onMounted(async () => {
   updateMods();
@@ -99,10 +92,7 @@ function updateMods() {
     .then((response) => {
       mods.value = response;
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 }
 
 function openUpdates(modID) {
@@ -119,10 +109,7 @@ function removeMod() {
     .then(() => {
       updateMods();
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 }
 
 function openDeleteDialog(mod) {

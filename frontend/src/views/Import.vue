@@ -33,18 +33,13 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <template v-slot:actions>
-        <v-btn dark text @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { getMods, addUpdate, getErrorMessage } from "@/services";
+import { getMods, addUpdate } from "@/services";
+import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
 import router from "@/router";
 import moment from "moment";
 
@@ -52,8 +47,6 @@ const valid = ref(false);
 const file = ref(null);
 const mods = ref([]);
 const mod = ref(null);
-const snackbar = ref(false);
-const error = ref("");
 
 const rules = [
   (value) => !!value || "This field is required",
@@ -71,10 +64,7 @@ onMounted(async () => {
     .then((response) => {
       mods.value = response;
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 });
 
 function back() {
@@ -83,8 +73,7 @@ function back() {
 
 function importMod() {
   if (!valid.value) {
-    snackbar.value = true;
-    error.value = "Please check your fields";
+    showErrorMessage("Please check your fields");
     return;
   }
   const reader = new FileReader();
@@ -100,13 +89,9 @@ function importMod() {
         .then(() => {
           back();
         })
-        .catch((err) => {
-          error.value = getErrorMessage(err);
-          snackbar.value = true;
-        });
+        .catch(showHttpErrorMessage);
     } catch (err) {
-      error.value = "Failed to parse JSON";
-      snackbar.value = true;
+      showErrorMessage("Failed to parse JSON");
     }
   };
   reader.readAsText(file.value);

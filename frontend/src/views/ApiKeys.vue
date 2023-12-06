@@ -58,16 +58,13 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { getApiKeys, deleteApiKey, addApiKey, getErrorMessage } from "@/services";
+import { getApiKeys, deleteApiKey, addApiKey } from "@/services";
+import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
 import router from "@/router";
 
 const apiKeys = ref([]);
@@ -75,8 +72,6 @@ const deleteDialog = ref(false);
 const addDialog = ref(false);
 const apiKeyToDelete = ref({});
 const apiKeyToAdd = ref("");
-const snackbar = ref(false);
-const error = ref("");
 
 onMounted(async () => {
   updateApiKeys();
@@ -89,11 +84,10 @@ function updateApiKeys() {
     })
     .catch((err) => {
       if (err.response?.status === 401) {
-        error.value = "You have no permission to view API Keys";
+        showErrorMessage("You have no permission to view API Keys");
       } else {
-        error.value = getErrorMessage(err);
+        showHttpErrorMessage(err);
       }
-      snackbar.value = true;
     });
 }
 
@@ -103,10 +97,7 @@ function removeApiKey() {
     .then(() => {
       updateApiKeys();
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 }
 
 function openDeleteDialog(apiKey) {
@@ -124,8 +115,7 @@ function generateApiKey() {
     .catch((err) => {
       apiKeyToAdd.value = "";
       addDialog.value = false;
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
+      showHttpErrorMessage(err);
     });
 }
 function copy(text) {

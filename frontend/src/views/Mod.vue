@@ -75,12 +75,6 @@
         }}</v-btn>
       </v-card-actions>
     </v-card>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <template v-slot:actions>
-        <v-btn dark text @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -88,6 +82,7 @@
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { getMod, addMod, editMod, getErrorMessage } from "@/services";
+import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
 import router from "@/router";
 
 const route = useRoute();
@@ -97,8 +92,6 @@ const modId = ref(route.query.modID);
 const newMod = ref(true);
 const mod = ref({});
 const valid = ref(false);
-const error = ref("");
-const snackbar = ref(false);
 
 const modIDRules = [
   (v) => !!v || "This field is required",
@@ -117,16 +110,12 @@ onMounted(async () => {
     .then((response) => {
       mod.value = response;
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 });
 
 function validate() {
   if (!valid.value) {
-    snackbar.value = true;
-    error.value = "Please check your fields";
+    showErrorMessage("Please check your fields");
     return;
   }
 
@@ -135,10 +124,7 @@ function validate() {
       .then(() => {
         back();
       })
-      .catch((err) => {
-        error.value = getErrorMessage(err);
-        snackbar.value = true;
-      });
+      .catch(showHttpErrorMessage);
   } else {
     const updatedMod = {
       name: mod.value.name,
@@ -151,10 +137,7 @@ function validate() {
       .then(() => {
         back();
       })
-      .catch((err) => {
-        error.value = getErrorMessage(err);
-        snackbar.value = true;
-      });
+      .catch(showHttpErrorMessage);
   }
 }
 

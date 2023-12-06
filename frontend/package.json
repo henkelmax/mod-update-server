@@ -12,6 +12,7 @@
     "axios": "^1.6.2",
     "js-file-download": "^0.4.12",
     "moment": "^2.29.4",
+    "pinia": "^2.1.7",
     "roboto-fontface": "*",
     "vue": "^3.2.0",
     "vue-router": "^4.0.0",

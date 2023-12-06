@@ -22,12 +22,6 @@
         <v-btn class="mr-6 mb-2" @click="runBackup">Backup</v-btn>
       </v-card-actions>
     </v-card>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <template v-slot:actions>
-        <v-btn dark text @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -36,11 +30,10 @@ import { ref } from "vue";
 import moment from "moment";
 import download from "js-file-download";
 import router from "@/router";
-import { backup, getErrorMessage } from "@/services";
+import { backup } from "@/services";
+import { showHttpErrorMessage } from "@/services/messages";
 
-const snackbar = ref(false);
 const processing = ref(false);
-const error = ref("");
 
 function back() {
   router.push("mods");
@@ -55,8 +48,7 @@ async function runBackup() {
       `backup_${moment().format("YYYY-MM-DD-HH:mm")}.json`
     );
   } catch (err) {
-    error.value = getErrorMessage(err);
-    snackbar.value = true;
+    showHttpErrorMessage(err);
   }
   processing.value = false;
 }

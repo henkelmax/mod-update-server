@@ -65,19 +65,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <template v-slot:actions>
-        <v-btn dark text @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
-import { getMod, getUpdates, removeUpdate, getErrorMessage } from "@/services";
+import { getMod, getUpdates, removeUpdate } from "@/services";
+import { showHttpErrorMessage } from "@/services/messages";
 import router from "@/router";
 import moment from "moment";
 
@@ -90,8 +85,6 @@ const page = ref(1);
 const amountPerPage = ref(16);
 const dialog = ref(false);
 const updateToDelete = ref({});
-const snackbar = ref(false);
-const error = ref("");
 
 onMounted(async () => {
   if (!modId.value) {
@@ -103,10 +96,7 @@ onMounted(async () => {
     .then((response) => {
       mod.value = response;
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
   updateUpdates();
 });
 
@@ -125,10 +115,7 @@ function updateUpdates() {
     .then((response) => {
       updates.value = response;
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 }
 
 function remove() {
@@ -137,27 +124,28 @@ function remove() {
     .then(() => {
       updateUpdates();
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 }
+
 function openDeleteDialog(update) {
   dialog.value = true;
   updateToDelete.value = update;
 }
+
 function editUpdate(updateID) {
   router.push({
     path: "update",
     query: { modID: modId.value, updateID: updateID },
   });
 }
+
 function addUpdate() {
   router.push({
     path: "update",
     query: { modID: modId.value },
   });
 }
+
 function back() {
   router.push("mods");
 }

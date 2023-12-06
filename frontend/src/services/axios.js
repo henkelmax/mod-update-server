@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getApiKey } from '@/stores/application';
+import { getApiKey } from '@/stores/applicationStore';
 
 const IS_DEV_ENVIRONMENT = process.env.NODE_ENV === 'development';
 

@@ -23,22 +23,17 @@
         <v-btn class="mr-6 mb-2" @click="login" :disabled="!valid">Log In</v-btn>
       </v-card-actions>
     </v-card>
-    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-      {{ error }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
-import { setApiKey, isLoggedIn, skipLogin } from "@/stores/application";
+import { setApiKey, isLoggedIn, skipLogin } from "@/stores/applicationStore";
 import { onMounted, ref } from "vue";
+import { showErrorMessage } from "@/services/messages";
 import router from "@/router";
 
 const password = ref("");
 const valid = ref(false);
-const error = ref("");
-const snackbar = ref(false);
 const passwordRules = [
   (v) => !!v || "This field is required",
   (v) =>
@@ -55,8 +50,7 @@ onMounted(() => {
 
 function login() {
   if (!valid.value) {
-    snackbar.value = true;
-    error.value = "Please check your fields";
+    showErrorMessage("Please check your fields");
     return;
   }
   if (password.value.trim() === "") {

@@ -93,18 +93,13 @@
       }}</v-btn>
     </v-card-actions>
   </v-card>
-  <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
-    {{ error }}
-    <template v-slot:actions>
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
-import { getMod, getUpdate, addUpdate, editUpdate, getErrorMessage } from "@/services";
+import { getMod, getUpdate, addUpdate, editUpdate } from "@/services";
+import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
 import moment from "moment";
 import router from "@/router";
 
@@ -122,8 +117,6 @@ const update = ref({
 });
 const mod = ref({});
 const valid = ref(false);
-const error = ref("");
-const snackbar = ref(false);
 const publishTime = ref(moment().format("HH:mm"));
 const publishDate = ref(moment().format("YYYY-MM-DD"));
 
@@ -150,10 +143,7 @@ onMounted(async () => {
     .then((response) => {
       mod.value = response;
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 
   getUpdate(modId.value, updateId.value)
     .then((response) => {
@@ -163,10 +153,7 @@ onMounted(async () => {
       publishTime.value = moment(update.value.publishDate).format("HH:mm");
       publishDate.value = moment(update.value.publishDate).format("YYYY-MM-DD");
     })
-    .catch((err) => {
-      error.value = getErrorMessage(err);
-      snackbar.value = true;
-    });
+    .catch(showHttpErrorMessage);
 });
 
 const updateMessages = computed({
@@ -206,8 +193,7 @@ watch(publishDate, async (date) => {
 
 function validate() {
   if (!valid.value) {
-    snackbar.value = true;
-    error.value = "Please check your fields";
+    showErrorMessage("Please check your fields");
     return;
   }
 
@@ -223,10 +209,7 @@ function validate() {
           query: { modID: modId.value },
         });
       })
-      .catch((err) => {
-        error.value = getErrorMessage(err);
-        snackbar.value = true;
-      });
+      .catch(showHttpErrorMessage);
   } else {
     editUpdate(modId.value, updateId.value, update.value)
       .then(() => {
@@ -235,10 +218,7 @@ function validate() {
           query: { modID: modId.value },
         });
       })
-      .catch((err) => {
-        error.value = getErrorMessage(err);
-        snackbar.value = true;
-      });
+      .catch(showHttpErrorMessage);
   }
 }
 
