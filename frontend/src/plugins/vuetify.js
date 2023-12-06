@@ -1,10 +1,19 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
+import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles';
 
-Vue.use(Vuetify);
+import { createVuetify } from 'vuetify';
 
-export default new Vuetify({
-  icons: {
-    iconfont: 'mdi'
-  }
+export default createVuetify({
+  theme: {
+    defaultTheme: 'dark',
+    themes: {
+      dark: {
+        dark: true,
+        colors: {
+          primary: '#FFFFFF',
+          secondary: '#01579B'
+        },
+      },
+    },
+  },
 });

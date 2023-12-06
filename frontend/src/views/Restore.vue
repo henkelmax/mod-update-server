@@ -1,11 +1,11 @@
 <template>
   <v-container>
     <v-card max-width="75%" class="mx-auto mt-4">
-      <v-card-title>
-        <span>Restore Backup</span>
+      <v-toolbar color="secondary">
+        <v-toolbar-title>Restore Backup</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn text color="gray" @click="back()">Back</v-btn>
-      </v-card-title>
+        <v-btn text color="white" @click="back">Back</v-btn>
+      </v-toolbar>
       <v-card-text>
         <v-form v-model="valid" ref="form">
           <v-file-input
@@ -28,92 +28,86 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn class="mr-6 mb-2" @click="restore" :disabled="!valid"
-          >Restore</v-btn
+        <v-btn class="mr-6 mb-2" color="green" @click="restoreBackup" :disabled="!valid">
+          Restore</v-btn
         >
       </v-card-actions>
     </v-card>
-    <v-snackbar
-      v-model="snackbar"
-      bottom
-      color="error"
-      multi-line
-      :timeout="6000"
-    >
+    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
       {{ error }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
+      <template v-slot:actions>
+        <v-btn dark text @click="snackbar = false">Close</v-btn>
+      </template>
     </v-snackbar>
   </v-container>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { ref } from "vue";
+import router from "@/router";
+import { getMods, restore, getErrorMessage } from "@/services";
 
-export default {
-  components: {},
-  data() {
-    return {
-      valid: false,
-      file: null,
-      snackbar: false,
-      processing: false,
-      error: "",
-      rules: [
-        (value) => !!value || "This field is required",
-        (value) =>
-          !value ||
-          !value.name ||
-          value.name.toLowerCase().endsWith(".json") ||
-          "The file has to be a .json file"
-      ]
-    };
-  },
-  methods: {
-    back() {
-      this.$router.push({
-        path: "mods"
-      });
-    },
-    restore() {
-      if (!this.$refs.form.validate()) {
-        this.snackbar = true;
-        this.error = "Please check your fields";
+const valid = ref(false);
+const file = ref(null);
+const snackbar = ref(false);
+const processing = ref(false);
+const error = ref("");
+
+const rules = [
+  (value) => !!value || "This field is required",
+  (value) =>
+    !value ||
+    !value.name ||
+    value.name.toLowerCase().endsWith(".json") ||
+    "The file has to be a .json file",
+];
+
+function back() {
+  router.push("mods");
+}
+
+function restoreBackup() {
+  if (!valid.value) {
+    snackbar.value = true;
+    error.value = "Please check your fields";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = async () => {
+    processing.value = true;
+    try {
+      const json = JSON.parse(reader.result);
+      if (!json.mods) {
+        showError("Invalid JSON");
         return;
       }
-      const reader = new FileReader();
-      reader.onload = async () => {
-        this.processing = true;
-        try {
-          const json = JSON.parse(reader.result);
-          if (!json.mods) {
-            throw new Error("Invalid JSON");
-          }
 
-          const mods = (await axios.get(`${this.server}/mods`)).data;
+      const mods = await getMods();
 
-          if (!mods) {
-            throw new Error("Could not retrieve mods");
-          }
+      if (mods.length > 0) {
+        showError("Please remove all data before restoring a backup");
+        return;
+      }
 
-          if (mods.length > 0) {
-            throw new Error("Data is not empty");
-          }
+      await restore(json);
 
-          await axios.post(`${this.server}/restore`, json, {
-            headers: {
-              apikey: sessionStorage.apiKey
-            }
-          });
-
-          this.back();
-        } catch (err) {
-          this.error = `Could not restore data: ${err?.response?.data?.message}`;
-          this.snackbar = true;
-        }
-        this.processing = false;
-      };
-      reader.readAsText(this.file);
+      back();
+    } catch (err) {
+      showError(getErrorMessage(err));
     }
+    processing.value = false;
+  };
+
+  if (file.value && file.value.length > 0) {
+    reader.readAsText(file.value[0]);
+  } else {
+    showError("Please only upload one file");
   }
-};
+}
+
+function showError(message) {
+  error.value = message;
+  snackbar.value = true;
+  processing.value = false;
+}
 </script>

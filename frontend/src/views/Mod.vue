@@ -1,15 +1,24 @@
 <template>
   <v-container>
     <v-card max-width="75%" class="mx-auto mt-4">
-      <v-card-title>
-        <span>{{ newMod ? 'Add a new mod' : `Edit ${mod.modID}` }}</span>
-      </v-card-title>
+      <v-toolbar color="secondary">
+        <v-toolbar-title>{{
+          newMod ? "Add a new mod" : `Edit ${mod.name}`
+        }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn text color="white" @click="back">Back</v-btn>
+      </v-toolbar>
       <v-card-text>
-        <v-form ref="form" v-model="valid">
+        <v-form v-model="valid">
           <v-container>
             <v-row>
               <v-col v-if="newMod" cols="12" md="12">
-                <v-text-field v-model="mod.modID" :rules="modIDRules" label="Mod ID" required></v-text-field>
+                <v-text-field
+                  v-model="mod.modID"
+                  :rules="modIDRules"
+                  label="Mod ID"
+                  required
+                ></v-text-field>
               </v-col>
 
               <v-col cols="12" md="12">
@@ -61,112 +70,95 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn class="mr-4 mb-2" @click="back">Back</v-btn>
-        <v-btn
-          :disabled="!valid"
-          color="success"
-          class="mr-6 mb-2"
-          @click="validate"
-        >{{ newMod ? 'Add' : 'Update' }}</v-btn>
+        <v-btn :disabled="!valid" color="green" class="mr-6 mb-2" @click="validate">{{
+          newMod ? "Add" : "Update"
+        }}</v-btn>
       </v-card-actions>
     </v-card>
     <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
       {{ error }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
+      <template v-slot:actions>
+        <v-btn dark text @click="snackbar = false">Close</v-btn>
+      </template>
     </v-snackbar>
   </v-container>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import { getMod, addMod, editMod, getErrorMessage } from "@/services";
+import router from "@/router";
 
-export default {
-  components: {},
-  data() {
-    return {
-      newMod: true,
-      mod: {},
-      valid: false,
-      error: "",
-      snackbar: false,
-      modIDRules: [
-        v => !!v || "This field is required",
-        v => /^[a-z-_]*$/.test(v) || "The Mod ID can only contain [a-z]"
-      ],
-      stringRequiredRules: [v => !!v || "This field is required"]
-    };
-  },
-  created() {
-    if (!this.$route.query.modID) {
-      return;
-    }
-    this.newMod = false;
+const route = useRoute();
 
-    axios
-      .get(`${this.server}/mods/${this.$route.query.modID}`)
-      .then(response => {
-        this.mod = response.data;
-      });
-  },
-  methods: {
-    validate() {
-      if (!this.$refs.form.validate()) {
-        this.snackbar = true;
-        this.error = "Please check your fields";
-        return;
-      }
+const modId = ref(route.query.modID);
 
-      if (this.newMod) {
-        axios
-          .post(`${this.server}/mods/add`, this.mod, {
-            headers: {
-              apikey: sessionStorage.apiKey
-            }
-          })
-          .then(response => {
-            this.$router.push({ path: "mods" });
-          })
-          .catch(err => {
-            this.showError(err);
-          });
-      } else {
-        const updatedMod = {
-          name: this.mod.name,
-          description: this.mod.description,
-          websiteURL: this.mod.websiteURL,
-          downloadURL: this.mod.downloadURL,
-          issueURL: this.mod.issueURL
-        };
-        axios
-          .post(`${this.server}/mods/edit/${this.mod.modID}`, updatedMod, {
-            headers: {
-              apikey: sessionStorage.apiKey
-            }
-          })
-          .then(response => {
-            this.$router.push({ path: "mods" });
-          })
-          .catch(err => {
-            this.showError(err);
-          });
-      }
-    },
-    showError(err) {
-      this.snackbar = true;
-      if (err.response) {
-        if (err.response.status === 401) {
-          this.error = "You are not authorized to add new mods";
-        } else {
-          this.error = `${err.response.statusText}: ${
-            err.response.data.err ? err.response.data.err : ""
-          }`;
-        }
-      } else {
-        this.error = "Unknown Error";
-      }
-    },
-    back() {
-      this.$router.push({ path: "mods" });
-    }
+const newMod = ref(true);
+const mod = ref({});
+const valid = ref(false);
+const error = ref("");
+const snackbar = ref(false);
+
+const modIDRules = [
+  (v) => !!v || "This field is required",
+  (v) => /^[a-z-_]*$/.test(v) || "The Mod ID can only contain [a-z]",
+];
+
+const stringRequiredRules = [(v) => !!v || "This field is required"];
+
+onMounted(async () => {
+  if (!modId.value) {
+    return;
   }
-};
+  newMod.value = false;
+
+  getMod(modId.value)
+    .then((response) => {
+      mod.value = response;
+    })
+    .catch((err) => {
+      error.value = getErrorMessage(err);
+      snackbar.value = true;
+    });
+});
+
+function validate() {
+  if (!valid.value) {
+    snackbar.value = true;
+    error.value = "Please check your fields";
+    return;
+  }
+
+  if (newMod.value) {
+    addMod(mod.value)
+      .then(() => {
+        back();
+      })
+      .catch((err) => {
+        error.value = getErrorMessage(err);
+        snackbar.value = true;
+      });
+  } else {
+    const updatedMod = {
+      name: mod.value.name,
+      description: mod.value.description,
+      websiteURL: mod.value.websiteURL,
+      downloadURL: mod.value.downloadURL,
+      issueURL: mod.value.issueURL,
+    };
+    editMod(mod.value.modID, updatedMod)
+      .then(() => {
+        back();
+      })
+      .catch((err) => {
+        error.value = getErrorMessage(err);
+        snackbar.value = true;
+      });
+  }
+}
+
+function back() {
+  router.push("mods");
+}
 </script>

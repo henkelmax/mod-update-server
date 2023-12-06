@@ -1,11 +1,11 @@
 <template>
   <v-container>
     <v-card max-width="75%" class="mx-auto mt-4">
-      <v-card-title>
-        <span>Backup Mods and Updates</span>
+      <v-toolbar color="secondary">
+        <v-toolbar-title>Backup Mods and Updates</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn text color="gray" @click="back()">Back</v-btn>
-      </v-card-title>
+        <v-btn text color="white" @click="back">Back</v-btn>
+      </v-toolbar>
       <v-card-text>
         <v-row justify="center">
           <v-progress-circular
@@ -19,60 +19,45 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn class="mr-6 mb-2" @click="backup">Backup</v-btn>
+        <v-btn class="mr-6 mb-2" @click="runBackup">Backup</v-btn>
       </v-card-actions>
     </v-card>
-    <v-snackbar
-      v-model="snackbar"
-      bottom
-      color="error"
-      multi-line
-      :timeout="6000"
-    >
+    <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
       {{ error }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
+      <template v-slot:actions>
+        <v-btn dark text @click="snackbar = false">Close</v-btn>
+      </template>
     </v-snackbar>
   </v-container>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { ref } from "vue";
 import moment from "moment";
 import download from "js-file-download";
+import router from "@/router";
+import { backup, getErrorMessage } from "@/services";
 
-export default {
-  components: {},
-  data() {
-    return {
-      snackbar: false,
-      processing: false,
-      error: ""
-    };
-  },
-  methods: {
-    back() {
-      this.$router.push({
-        path: "mods"
-      });
-    },
-    async backup() {
-      this.processing = true;
-      try {
-        const backup = await axios.get(`${this.server}/backup`, {
-          headers: {
-            apikey: sessionStorage.apiKey
-          }
-        });
-        download(
-          JSON.stringify(backup.data, null, 2),
-          `backup_${moment().format("YYYY-MM-DD-HH:mm")}.json`
-        );
-      } catch (err) {
-        this.error = `Could not backup data: ${err?.response?.data?.message}`;
-        this.snackbar = true;
-      }
-      this.processing = false;
-    }
+const snackbar = ref(false);
+const processing = ref(false);
+const error = ref("");
+
+function back() {
+  router.push("mods");
+}
+
+async function runBackup() {
+  processing.value = true;
+  try {
+    const backupJson = await backup();
+    download(
+      JSON.stringify(backupJson, null, 2),
+      `backup_${moment().format("YYYY-MM-DD-HH:mm")}.json`
+    );
+  } catch (err) {
+    error.value = getErrorMessage(err);
+    snackbar.value = true;
   }
-};
+  processing.value = false;
+}
 </script>

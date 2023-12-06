@@ -12,15 +12,15 @@
             type="password"
             class="ml-4 mr-4"
             :rules="passwordRules"
-            @keyup.enter="logIn()"
+            @keyup.enter="login"
             required
           ></v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn class="mr-4 mb-2" @click="skip()" >Skip</v-btn>
-        <v-btn class="mr-6 mb-2" @click="logIn()" :disabled="!valid">Log In</v-btn>
+        <v-btn class="mr-4 mb-2" @click="skip">Skip</v-btn>
+        <v-btn class="mr-6 mb-2" @click="login" :disabled="!valid">Log In</v-btn>
       </v-card-actions>
     </v-card>
     <v-snackbar v-model="snackbar" bottom color="error" multi-line :timeout="6000">
@@ -30,48 +30,44 @@
   </v-container>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { setApiKey, isLoggedIn, skipLogin } from "@/stores/application";
+import { onMounted, ref } from "vue";
+import router from "@/router";
 
-export default {
-  components: {},
-  data() {
-    return {
-      password: "",
-      valid: false,
-      error: "",
-      snackbar: false,
-      passwordRules: [
-        v => !!v || "This field is required",
-        v =>
-          /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-            v
-          ) || "The API key has to be in the UUID format"
-      ]
-    };
-  },
-  created() {
-    if (!!sessionStorage.apiKey) {
-      this.$router.push("mods");
-    }
-  },
-  methods: {
-    logIn() {
-      if (!this.$refs.form.validate()) {
-        this.snackbar = true;
-        this.error = "Please check your fields";
-        return;
-      }
-      if (this.password.trim() === "") {
-        return;
-      }
-      sessionStorage.apiKey = this.password;
-      this.$router.push("mods");
-    },
-    skip() {
-      sessionStorage.apiKey = "00000000-0000-0000-0000-000000000000";
-      this.$router.push("mods");
-    }
+const password = ref("");
+const valid = ref(false);
+const error = ref("");
+const snackbar = ref(false);
+const passwordRules = [
+  (v) => !!v || "This field is required",
+  (v) =>
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+      v
+    ) || "The API key has to be in the UUID format",
+];
+
+onMounted(() => {
+  if (isLoggedIn()) {
+    router.push("mods");
   }
-};
+});
+
+function login() {
+  if (!valid.value) {
+    snackbar.value = true;
+    error.value = "Please check your fields";
+    return;
+  }
+  if (password.value.trim() === "") {
+    return;
+  }
+  setApiKey(password.value);
+  router.push("mods");
+}
+
+function skip() {
+  skipLogin();
+  router.push("mods");
+}
 </script>

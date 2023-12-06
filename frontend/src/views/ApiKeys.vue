@@ -1,33 +1,31 @@
 <template>
   <v-container>
     <v-card max-width="75%" class="mx-auto mt-4">
-      <v-card-title>
-        <span>API Keys</span>
+      <v-toolbar color="secondary">
+        <v-toolbar-title>API Keys</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn text color="primary" @click="addDialog = true">Add API Key</v-btn>
-        <v-btn text color="gray" @click="back()">Back</v-btn>
-      </v-card-title>
+        <v-btn text color="white" @click="addDialog = true">Add API Key</v-btn>
+        <v-btn text color="white" @click="back">Back</v-btn>
+      </v-toolbar>
       <v-list>
-        <template v-for="(apiKey, i) in apiKeys">
-          <div :key="apiKey.apiKey">
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title v-text="apiKey.apiKey"></v-list-item-title>
-                <v-list-item-subtitle v-text="apiKey.mods.join(', ')"></v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-btn text icon color="gray" @click="copy(apiKey.apiKey)">
-                  <v-icon>mdi-clipboard</v-icon>
-                </v-btn>
-              </v-list-item-action>
-              <v-list-item-action>
-                <v-btn text icon color="gray" @click="openDeleteDialog(apiKey)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-list-item>
-            <v-divider v-if="i!==apiKeys.length-1" class="ml-2 mr-2"></v-divider>
-          </div>
+        <template v-for="(apiKey, i) in apiKeys" :key="apiKey.apiKey">
+          <v-list-item :title="apiKey.apiKey" :subtitle="apiKey.mods.join(', ')">
+            <template v-slot:append>
+              <v-btn
+                color="grey-darken-2"
+                icon="mdi-clipboard"
+                variant="text"
+                @click.stop="copy(apiKey.apiKey)"
+              ></v-btn>
+              <v-btn
+                color="grey-darken-2"
+                icon="mdi-delete"
+                variant="text"
+                @click.stop="openDeleteDialog(apiKey)"
+              ></v-btn>
+            </template>
+          </v-list-item>
+          <v-divider v-if="i !== apiKeys.length - 1" class="ml-2 mr-2"></v-divider>
         </template>
       </v-list>
     </v-card>
@@ -37,8 +35,8 @@
         <v-card-text>Do you really want to delete this API key?</v-card-text>
         <v-card-actions>
           <div class="flex-grow-1"></div>
-          <v-btn color="darken-1" text @click="dialog = false">No</v-btn>
-          <v-btn color="primary darken-1" text @click="removeApiKey">Yes</v-btn>
+          <v-btn color="red" text @click="deleteDialog = false">No</v-btn>
+          <v-btn color="green" text @click="removeApiKey">Yes</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -48,12 +46,15 @@
         <v-card-text>
           Which mods should be allowed? (* for all)
           <br />
-          <v-text-field v-model="apiKeyToAdd" label="Mods (Comma separated)"></v-text-field>
+          <v-text-field
+            v-model="apiKeyToAdd"
+            label="Mods (Comma separated)"
+          ></v-text-field>
         </v-card-text>
 
         <v-card-actions>
           <div class="flex-grow-1"></div>
-          <v-btn color="primary darken-1" text @click="addApiKey">OK</v-btn>
+          <v-btn color="green" text @click="generateApiKey">OK</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -64,96 +65,73 @@
   </v-container>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { onMounted, ref } from "vue";
+import { getApiKeys, deleteApiKey, addApiKey, getErrorMessage } from "@/services";
+import router from "@/router";
 
-export default {
-  components: {},
-  data() {
-    return {
-      apiKeys: [],
-      deleteDialog: false,
-      addDialog: false,
-      apiKeyToDelete: {},
-      apiKeyToAdd: "",
-      snackbar: false,
-      error: ""
-    };
-  },
-  created() {
-    this.updateApiKeys();
-  },
-  methods: {
-    updateApiKeys() {
-      axios
-        .get(`${this.server}/apikeys`, {
-          headers: {
-            apikey: sessionStorage.apiKey
-          }
-        })
-        .then(response => {
-          this.apiKeys = response.data;
-        })
-        .catch(err => {
-          if (err.response && err.response.status === 401) {
-            this.error = "You have no permission to view API Keys";
-          } else {
-            this.error = "Could not retrieve API Keys";
-          }
-          this.snackbar = true;
-        });
-    },
-    removeApiKey() {
-      this.deleteDialog = false;
-      axios
-        .delete(`${this.server}/apikeys/${this.apiKeyToDelete.apiKey}`, {
-          headers: {
-            apikey: sessionStorage.apiKey
-          }
-        })
-        .then(response => {
-          this.updateApiKeys();
-        })
-        .catch(err => {
-          this.error = "Could not delete API Key";
-          this.snackbar = true;
-        });
-    },
-    openDeleteDialog(apiKey) {
-      this.deleteDialog = true;
-      this.apiKeyToDelete = apiKey;
-    },
-    addApiKey() {
-      axios
-        .post(
-          `${this.server}/apikeys/add`,
-          this.apiKeyToAdd.split(","),
-          {
-            headers: {
-              apikey: sessionStorage.apiKey
-            }
-          }
-        )
-        .then(response => {
-          this.apiKeyToAdd = "";
-          this.addDialog = false;
-          this.updateApiKeys();
-        })
-        .catch(err => {
-          this.apiKeyToAdd = "";
-          this.addDialog = false;
-          this.error = "Could not add API Key";
-          this.snackbar = true;
-        });
-    },
-    copy(text) {
-      this.$clipboard(text);
-    },
-    back() {
-      this.$router.push({
-        path: "mods"
-      });
-    }
-  }
-};
+const apiKeys = ref([]);
+const deleteDialog = ref(false);
+const addDialog = ref(false);
+const apiKeyToDelete = ref({});
+const apiKeyToAdd = ref("");
+const snackbar = ref(false);
+const error = ref("");
+
+onMounted(async () => {
+  updateApiKeys();
+});
+
+function updateApiKeys() {
+  getApiKeys()
+    .then((response) => {
+      apiKeys.value = response;
+    })
+    .catch((err) => {
+      if (err.response?.status === 401) {
+        error.value = "You have no permission to view API Keys";
+      } else {
+        error.value = getErrorMessage(err);
+      }
+      snackbar.value = true;
+    });
+}
+
+function removeApiKey() {
+  deleteDialog.value = false;
+  deleteApiKey(apiKeyToDelete.value.apiKey)
+    .then(() => {
+      updateApiKeys();
+    })
+    .catch((err) => {
+      error.value = getErrorMessage(err);
+      snackbar.value = true;
+    });
+}
+
+function openDeleteDialog(apiKey) {
+  deleteDialog.value = true;
+  apiKeyToDelete.value = apiKey;
+}
+
+function generateApiKey() {
+  addApiKey(apiKeyToAdd.value.split(","))
+    .then(() => {
+      apiKeyToAdd.value = "";
+      addDialog.value = false;
+      updateApiKeys();
+    })
+    .catch((err) => {
+      apiKeyToAdd.value = "";
+      addDialog.value = false;
+      error.value = getErrorMessage(err);
+      snackbar.value = true;
+    });
+}
+function copy(text) {
+  navigator.clipboard.writeText(text);
+}
+function back() {
+  router.push("mods");
+}
 </script>
