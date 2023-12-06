@@ -37,7 +37,7 @@ public class ModController {
 
     @ValidateApiKey
     @PostMapping("/mods/edit/{modID}")
-    public ResponseEntity<?> editUpdate(@PathVariable("modID") String modID, @Valid @RequestBody ModWithoutModId mod) {
+    public ResponseEntity<?> editMod(@PathVariable("modID") String modID, @Valid @RequestBody ModWithoutModId mod) {
         if (!modService.editUpdate(modID, mod)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
@@ -55,7 +55,7 @@ public class ModController {
 
     @ValidateApiKey
     @DeleteMapping("/mods/{modID}")
-    public ResponseEntity<?> deleteUpdate(@PathVariable("modID") String modID) {
+    public ResponseEntity<?> deleteMod(@PathVariable("modID") String modID) {
         modService.deleteUpdate(modID);
         return new ResponseEntity<>(HttpStatus.OK);
     }
