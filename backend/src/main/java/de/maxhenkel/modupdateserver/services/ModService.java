@@ -87,7 +87,7 @@ public class ModService {
      * @return <code>false</code> if the mod already exists
      */
     public boolean addMod(Mod mod) {
-        if (!doesModExist(mod.getModID())) {
+        if (doesModExist(mod.getModID())) {
             return false;
         }
         modRepository.save(mod);
