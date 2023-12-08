@@ -1,11 +1,18 @@
-# Example Docker Compose Configuration
+# Docker Compose Example
 
+## Building the Image
+
+```sh
+docker build https://github.com/henkelmax/mod-update-server.git -t "mod-update-server:latest"
+```
+
+## Example Docker Compose Configuration 
 ``` yml
 version: "3.9"
 
 services:
   update-server:
-    build: "https://github.com/henkelmax/mod-update-server.git#master"
+    image: "mod-update-server:latest"
     restart: "always"
     container_name: "update-server"
     environment:
