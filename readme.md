@@ -97,8 +97,8 @@ See [this](docker_compose.md).
 ```
 
 
-The REST API should be available at port 8088 and the web interface is usually available at port 8080 (If not already in
-use).
+The REST API should be available at port 8088
+and the web interface is usually available at port 3000 (If not already in use).
 
 ## Environment Variables
 
