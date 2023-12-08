@@ -8,19 +8,33 @@
     <template v-if="updates.length > 0">
       <v-list lines="two">
         <template v-for="(update, i) in updates" :key="update._id">
-          <v-list-item
-            :title="`[${update.modLoader.toUpperCase()}] [${update.gameVersion}] ${
-              update.mod.name
-            } ${update.version}`"
-          >
-            <template v-slot:subtitle>
-              <div class="mb-2">
-                {{ `Released ${moment(update.publishDate).fromNow()}` }}
-              </div>
-              <div v-for="(str, idx) in update.updateMessages" :key="idx">
-                {{ str }}
-              </div>
-            </template>
+          <v-list-item>
+            <v-list-item-title class="text-h6">
+              {{ update.mod.name }} {{ update.version }}
+              <v-chip class="ml-2" variant="flat" color="blue" size="small" label>
+                {{ update.gameVersion }}
+              </v-chip>
+              <v-chip class="ml-1" variant="flat" color="blue" size="small" label>
+                {{ update.modLoader }}
+              </v-chip>
+              <v-chip
+                v-for="tag in update.tags"
+                :key="tag"
+                class="ml-1"
+                variant="flat"
+                color="green"
+                size="small"
+                label
+              >
+                {{ tag }}
+              </v-chip>
+            </v-list-item-title>
+            <div class="mb-1 text-grey-lighten-1 text-subtitle-2">
+              {{ `Released ${moment(update.publishDate).fromNow()}` }}
+            </div>
+            <div v-for="(str, idx) in update.updateMessages" :key="idx" class="text-grey">
+              {{ str }}
+            </div>
             <template v-slot:append>
               <v-btn
                 color="grey-darken-2"

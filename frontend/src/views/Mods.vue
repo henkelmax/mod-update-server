@@ -24,11 +24,13 @@
     ></v-text-field>
     <v-list lines="two">
       <template v-for="(mod, i) in filteredMods" :key="mod.modID">
-        <v-list-item
-          :title="mod.name"
-          :subtitle="mod.description"
-          @click="openUpdates(mod.modID)"
-        >
+        <v-list-item @click="openUpdates(mod.modID)">
+          <v-list-item-title class="text-h6">
+            {{ mod.name }}
+          </v-list-item-title>
+          <div class="mb-1 text-grey-lighten-1 text-subtitle-2">
+            {{ mod.description }}
+          </div>
           <template v-slot:append>
             <v-btn
               color="grey-darken-2"
