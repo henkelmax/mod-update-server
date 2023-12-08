@@ -9,7 +9,11 @@
     <template v-if="updates.length > 0">
       <v-list lines="two">
         <template v-for="(update, i) in updates" :key="update._id">
-          <v-list-item :title="`[${update.gameVersion}] ${mod.name} ${update.version}`">
+          <v-list-item
+            :title="`[${update.modLoader.toUpperCase()}] [${update.gameVersion}] ${
+              mod.name
+            } ${update.version}`"
+          >
             <template v-slot:subtitle>
               <div class="mb-2">
                 {{ `Released ${moment(update.publishDate).fromNow()}` }}
