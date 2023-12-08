@@ -1,4 +1,4 @@
-FROM node:12-alpine AS frontend-builder
+FROM node:18-alpine AS frontend-builder
 
 COPY frontend/package.json .
 COPY frontend/yarn.lock .
