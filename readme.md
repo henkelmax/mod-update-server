@@ -14,7 +14,7 @@ This can be used directly for the [Forge Update Checker](https://docs.minecraftf
 ## Requests
 
 | Method   | Path                                | Description                                                                                                               |
-| -------- |-------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+|----------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
 | `GET`    | `/mods`                             | List all mods.                                                                                                            |
 | `GET`    | `/mods/MODNAME`                     | Get a specific mod.                                                                                                       |
 | `GET`    | `/updates?amount=16&page=0`         | Show update entries for all mods. Optional query parameters: `amount` for the update count per page, `page` for the page. |
@@ -103,7 +103,7 @@ and the web interface is usually available at port 3000 (If not already in use).
 ## Environment Variables
 
 | Variable         | Description                                                     | Default Value |
-| ---------------- | --------------------------------------------------------------- |---------------|
+|------------------|-----------------------------------------------------------------|---------------|
 | `DB_IP`          | The IP of the MongoDB database                                  | `localhost`   |
 | `DB_PORT`        | The port of the MongoDB database                                | `27017`       |
 | `DB_NAME`        | The database name                                               | `updates`     |
