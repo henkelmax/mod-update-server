@@ -24,6 +24,10 @@ export async function getUpdates(modId, amount, page) {
   return (await axios.get(`updates/${modId}?amount=${amount}&page=${page}`)).data;
 }
 
+export async function getLatestUpdates(amount, page) {
+  return (await axios.get(`updates?amount=${amount}&page=${page}`)).data;
+}
+
 export async function getUpdate(modId, updateId) {
   return (await axios.get(`updates/${modId}/${updateId}`)).data;
 }

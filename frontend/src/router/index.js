@@ -9,6 +9,7 @@ import Import from '@/views/Import.vue'
 import Backup from '@/views/Backup.vue'
 import Restore from '@/views/Restore.vue'
 import ApiKeys from '@/views/ApiKeys.vue'
+import LatestUpdates from '@/views/LatestUpdates.vue'
 
 const routes = [
   {
@@ -61,6 +62,11 @@ const routes = [
         path: 'apikeys',
         name: 'apikeys',
         component: ApiKeys,
+      },
+      {
+        path: 'latest',
+        name: 'latest',
+        component: LatestUpdates,
       },
     ],
   },
