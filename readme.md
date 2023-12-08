@@ -35,13 +35,13 @@ This can be used directly for the [Forge Update Checker](https://docs.minecraftf
 
 **Example Update**
 
-```js
+```json5
 {
-  "publishDate": "2019-10-10T14:48:00",                               // The publishing date (used to order the updates).
-  "gameVersion": "1.14.4",                                            // The game version.
-  "modLoader": "forge",                                               // The mod loader [forge, fabric, quilt]. Default value: "forge".
+  "publishDate": "2023-12-08T14:48:00",                               // The publishing date (used to order the updates).
+  "gameVersion": "1.20.4",                                            // The game version.
+  "modLoader": "forge",                                               // The mod loader [forge, neoforge, fabric, quilt]. Default value: "forge".
   "version": "1.0.0",                                                 // The mod version.
-  "updateMessages": ["Updated to 1.14.4", "Added readme.md"],         // The update messages (Changelog etc.).
+  "updateMessages": ["Updated to 1.20.4", "Added readme.md"],         // The update messages (Changelog etc.).
   "releaseType": "release",                                           // The release type [alpha, beta, release]. Default value: "release".
   "tags": ["recommended"]                                             // Additional tags e.g. recommended.
 }
@@ -49,7 +49,7 @@ This can be used directly for the [Forge Update Checker](https://docs.minecraftf
 
 **Example Mod**
 
-```js
+```json5
 {
   "modID": "examplemod",                                              // The mod ID (used to identify the mod)
   "name": "Example Mod",                                              // The name of the mod
@@ -62,7 +62,7 @@ This can be used directly for the [Forge Update Checker](https://docs.minecraftf
 
 **Example ApiKey**
 
-```js
+```json5
 {
   "mods": ["examplemod"]                                                // The mods that this key has access to ("*" for every mod)
 }
