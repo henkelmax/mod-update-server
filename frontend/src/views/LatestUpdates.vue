@@ -35,20 +35,6 @@
             <div v-for="(str, idx) in update.updateMessages" :key="idx" class="text-grey">
               {{ str }}
             </div>
-            <template v-slot:append>
-              <v-btn
-                color="grey-darken-2"
-                icon="mdi-pencil"
-                variant="text"
-                @click.stop="editUpdate(update._id)"
-              ></v-btn>
-              <v-btn
-                color="grey-darken-2"
-                icon="mdi-delete"
-                variant="text"
-                @click.stop="openDeleteDialog(update)"
-              ></v-btn>
-            </template>
           </v-list-item>
           <v-divider v-if="i !== updates.length - 1" class="ml-2 mr-2"></v-divider>
         </template>
