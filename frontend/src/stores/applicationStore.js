@@ -1,9 +1,9 @@
 export function getApiKey() {
-  return sessionStorage.apiKey;
+  return sessionStorage.getItem('apiKey');
 }
 
 export function setApiKey(apiKey) {
-  sessionStorage.apiKey = apiKey;
+  sessionStorage.setItem('apiKey', apiKey);
 }
 
 export function isLoggedIn() {
