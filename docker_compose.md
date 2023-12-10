@@ -7,6 +7,7 @@ docker build https://github.com/henkelmax/mod-update-server.git -t "mod-update-s
 ```
 
 ## Example Docker Compose Configuration 
+
 ``` yml
 version: "3.9"
 
@@ -17,12 +18,15 @@ services:
     container_name: "update-server"
     environment:
       MASTER_KEY: "b13c2739-f6e4-4123-b486-8f44c3f53bac" # Change this to a secret value
-      DB_IP: "update-mongodb"
+      DB_IP: "update-postgres"
+      DB_NAME: "updates"
+      DB_USER: "postgres"
+      DB_PASSWORD: "supersecretpassword"
     networks:
       - "web"
       - "update-server"
     depends_on:
-      - "update-mongodb"
+      - "update-postgres"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.updateHttp.rule=Host(`update.maxhenkel.de`, `www.update.maxhenkel.de`)"
@@ -33,12 +37,16 @@ services:
       - "traefik.http.routers.updateHttps.tls.certresolver=certHttp"
       - "traefik.http.routers.updateHttps.tls=true"
       - "traefik.http.services.update_service.loadbalancer.server.port=8088"
-  update-mongodb:
-    image: "mongo:6"
+  update-postgres:
+    image: "postgres:16"
     restart: "always"
-    container_name: "update-mongodb"
+    container_name: "update-postgres"
+    environment:
+      POSTGRES_DB: "updates"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "supersecretpassword"
     volumes:
-      - "/dockerdata/update-server/mongo:/data/db"
+      - "/dockerdata/update-server/postgres:/var/lib/postgresql/data"
     networks:
       - "update-server"
   update-prometheus:
@@ -78,5 +86,4 @@ networks:
     external: true
   update-server:
     internal: true
-
 ```
