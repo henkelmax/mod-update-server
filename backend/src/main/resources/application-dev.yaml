@@ -1,2 +1,12 @@
 modupdateserver:
   masterkey: 00000000-0000-0000-0000-000000000000
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./h2/db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+h2:
+  console:
+    enabled: true

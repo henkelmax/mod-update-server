@@ -1,9 +1,8 @@
 package de.maxhenkel.modupdateserver.controllers;
 
 import de.maxhenkel.modupdateserver.annotations.ValidateApiKey;
-import de.maxhenkel.modupdateserver.entities.Mod;
-import de.maxhenkel.modupdateserver.entities.ModWithUpdateCount;
-import de.maxhenkel.modupdateserver.entities.ModWithoutModId;
+import de.maxhenkel.modupdateserver.dtos.Mod;
+import de.maxhenkel.modupdateserver.dtos.ModWithoutModId;
 import de.maxhenkel.modupdateserver.services.ModService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ModController {
@@ -22,7 +22,7 @@ public class ModController {
     private ModService modService;
 
     @GetMapping("/mods")
-    public ResponseEntity<List<ModWithUpdateCount>> getMods() {
+    public ResponseEntity<List<Mod>> getMods() {
         return new ResponseEntity<>(modService.getMods(), HttpStatus.OK);
     }
 
@@ -38,25 +38,25 @@ public class ModController {
     @ValidateApiKey
     @PostMapping("/mods/edit/{modID}")
     public ResponseEntity<?> editMod(@PathVariable("modID") String modID, @Valid @RequestBody ModWithoutModId mod) {
-        if (!modService.editUpdate(modID, mod)) {
+        if (!modService.editMod(modID, mod)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/mods/{modID}")
-    public ResponseEntity<ModWithUpdateCount> getMod(@PathVariable("modID") String modID) {
-        ModWithUpdateCount modWithUpdates = modService.getModWithUpdates(modID);
-        if (modWithUpdates == null) {
+    public ResponseEntity<Mod> getMod(@PathVariable("modID") String modID) {
+        Optional<Mod> optionalMod = modService.getMod(modID);
+        if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
-        return new ResponseEntity<>(modWithUpdates, HttpStatus.OK);
+        return new ResponseEntity<>(optionalMod.get(), HttpStatus.OK);
     }
 
     @ValidateApiKey
     @DeleteMapping("/mods/{modID}")
     public ResponseEntity<?> deleteMod(@PathVariable("modID") String modID) {
-        modService.deleteUpdate(modID);
+        modService.deleteMod(modID);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -1,21 +1,18 @@
 package de.maxhenkel.modupdateserver.services;
 
-import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.UpdateResult;
-import de.maxhenkel.modupdateserver.entities.Mod;
-import de.maxhenkel.modupdateserver.entities.Update;
+import de.maxhenkel.modupdateserver.dtos.Mod;
+import de.maxhenkel.modupdateserver.dtos.Update;
+import de.maxhenkel.modupdateserver.dtos.UpdateWithoutIdAndMod;
+import de.maxhenkel.modupdateserver.entities.ModEntity;
+import de.maxhenkel.modupdateserver.entities.UpdateEntity;
 import de.maxhenkel.modupdateserver.entities.UpdateWithMod;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
-import org.bson.types.ObjectId;
+import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,9 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Service
 public class UpdateService {
@@ -37,18 +31,15 @@ public class UpdateService {
     private UpdateRepository updateRepository;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private ModelMapper modelMapper;
 
-    public List<UpdateWithMod> getUpdates(int amount, int page) {
-        Aggregation agg = newAggregation(
-                sort(Sort.Direction.DESC, "publishDate", "gameVersion"),
-                skip((long) amount * (long) page),
-                limit(amount),
-                lookup("mods", "mod", "_id", "mod"),
-                unwind("$mod")
-        );
-        AggregationResults<UpdateWithMod> aggregate = mongoTemplate.aggregate(agg, Update.class, UpdateWithMod.class);
-        return aggregate.getMappedResults();
+    public List<de.maxhenkel.modupdateserver.dtos.UpdateWithMod> getUpdates(int amount, int page) {
+        Page<UpdateWithMod> p = updateRepository.getAllUpdatesWithMod(PageRequest.of(page, amount));
+        return p.get().map(e -> {
+            de.maxhenkel.modupdateserver.dtos.UpdateWithMod updateWithMod = modelMapper.map(e.getUpdate(), de.maxhenkel.modupdateserver.dtos.UpdateWithMod.class);
+            updateWithMod.setMod(modelMapper.map(e.getMod(), Mod.class));
+            return updateWithMod;
+        }).toList();
     }
 
     /**
@@ -59,16 +50,15 @@ public class UpdateService {
      */
     @Nullable
     public List<Update> getModUpdates(String modID, int amount, int page) {
-        Optional<Mod> optionalMod = modRepository.findByModID(modID);
+        Optional<ModEntity> optionalMod = modRepository.findById(modID);
         if (optionalMod.isEmpty()) {
             return null;
         }
-        Mod mod = optionalMod.get();
-        Query query = new Query();
-        query.with(PageRequest.of(page, amount));
-        query.addCriteria(Criteria.where("mod").is(mod.getId()));
-        query.with(Sort.by(Sort.Direction.DESC, "publishDate", "gameVersion"));
-        return mongoTemplate.find(query, Update.class);
+        ModEntity mod = optionalMod.get();
+
+        Page<UpdateEntity> p = updateRepository.findAllByModOrderByPublishDateDesc(mod.getModID(), PageRequest.of(page, amount));
+
+        return p.get().map(updateEntity -> modelMapper.map(updateEntity, Update.class)).toList();
     }
 
     /**
@@ -76,14 +66,17 @@ public class UpdateService {
      * @param update the update
      * @return <code>false</code> if the mod does not exist
      */
-    public boolean addUpdate(String modID, Update update) {
-        Optional<Mod> optionalMod = modRepository.findByModID(modID);
+    @Transactional
+    public boolean addUpdate(String modID, UpdateWithoutIdAndMod update) {
+        Optional<ModEntity> optionalMod = modRepository.findById(modID);
         if (optionalMod.isEmpty()) {
             return false;
         }
-        Mod mod = optionalMod.get();
-        update.setMod(mod.getId());
-        updateRepository.save(update);
+        ModEntity mod = optionalMod.get();
+        UpdateEntity updateEntity = modelMapper.map(update, UpdateEntity.class);
+        updateEntity.setMod(mod.getModID());
+        updateEntity.setId(null);
+        updateRepository.save(updateEntity);
         return true;
     }
 
@@ -94,20 +87,17 @@ public class UpdateService {
      * @return the update
      * @throws ResponseStatusException if the mod or update doesn't exist
      */
-    public Update getUpdate(String modID, ObjectId updateID) {
-        Optional<Mod> optionalMod = modRepository.findByModID(modID);
+    public Update getUpdate(String modID, long updateID) {
+        Optional<ModEntity> optionalMod = modRepository.findById(modID);
         if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
-        Mod mod = optionalMod.get();
-        Query query = new Query();
-        query.addCriteria(Criteria.where("mod").is(mod.getId()));
-        query.addCriteria(Criteria.where("_id").is(updateID));
-        Update update = mongoTemplate.findOne(query, Update.class);
-        if (update == null) {
+        ModEntity mod = optionalMod.get();
+        Optional<UpdateEntity> optionalUpdate = updateRepository.findFirstByModAndId(mod.getModID(), updateID);
+        if (optionalUpdate.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Update does not exist");
         }
-        return update;
+        return optionalUpdate.map(updateEntity -> modelMapper.map(updateEntity, Update.class)).get();
     }
 
     /**
@@ -116,34 +106,27 @@ public class UpdateService {
      * @param update   the update
      * @throws ResponseStatusException if the mod or update doesn't exist
      */
-    public void editUpdate(String modID, ObjectId updateID, Update update) {
-        Optional<Mod> optionalMod = modRepository.findByModID(modID);
+    public void editUpdate(String modID, long updateID, UpdateWithoutIdAndMod update) {
+        Optional<ModEntity> optionalMod = modRepository.findById(modID);
         if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
-        Mod mod = optionalMod.get();
-        Optional<Update> optionalUpdate = updateRepository.findById(updateID);
+        ModEntity mod = optionalMod.get();
+        Optional<UpdateEntity> optionalUpdate = updateRepository.findFirstByModAndId(mod.getModID(), updateID);
 
         if (optionalUpdate.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Update does not exist");
         }
-        Update oldUpdate = optionalUpdate.get();
+        UpdateEntity updateEntity = optionalUpdate.get();
 
-        Query query = Query.query(where("_id").is(oldUpdate.getId())).addCriteria(where("mod").is(mod.getId()));
-        org.springframework.data.mongodb.core.query.Update u = new org.springframework.data.mongodb.core.query.Update()
-                .set("publishDate", update.getPublishDate())
-                .set("gameVersion", update.getGameVersion())
-                .set("version", update.getVersion())
-                .set("updateMessages", update.getUpdateMessages())
-                .set("releaseType", update.getReleaseType())
-                .set("tags", update.getTags())
-                .set("modLoader", update.getModLoader());
-
-        UpdateResult updateResult = mongoTemplate.updateMulti(query, u, Update.class);
-
-        if (updateResult.getMatchedCount() <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Update does not exist");
-        }
+        updateEntity.setPublishDate(update.getPublishDate());
+        updateEntity.setGameVersion(update.getGameVersion());
+        updateEntity.setVersion(update.getVersion());
+        updateEntity.setUpdateMessages(update.getUpdateMessages());
+        updateEntity.setReleaseType(update.getReleaseType());
+        updateEntity.setTags(update.getTags());
+        updateEntity.setModLoader(update.getModLoader());
+        updateRepository.save(updateEntity);
     }
 
     /**
@@ -151,25 +134,18 @@ public class UpdateService {
      * @param updateID the update ID
      * @throws ResponseStatusException if the mod or update doesn't exist
      */
-    public void deleteUpdate(String modID, ObjectId updateID) {
-        Optional<Mod> optionalMod = modRepository.findByModID(modID);
+    public void deleteUpdate(String modID, long updateID) {
+        Optional<ModEntity> optionalMod = modRepository.findById(modID);
         if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
-        Mod mod = optionalMod.get();
-        Optional<Update> optionalUpdate = updateRepository.findById(updateID);
+        ModEntity mod = optionalMod.get();
+        Optional<UpdateEntity> optionalUpdate = updateRepository.findFirstByModAndId(mod.getModID(), updateID);
 
         if (optionalUpdate.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Update does not exist");
         }
-        Update update = optionalUpdate.get();
-
-        Query query = Query.query(where("_id").is(update.getId())).addCriteria(where("mod").is(mod.getId()));
-        DeleteResult deleteResult = mongoTemplate.remove(query, Update.class);
-
-        if (deleteResult.getDeletedCount() <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Update does not exist");
-        }
+        updateRepository.delete(optionalUpdate.get());
     }
 
 }

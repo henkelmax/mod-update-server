@@ -1,4 +1,4 @@
-package de.maxhenkel.modupdateserver.entities;
+package de.maxhenkel.modupdateserver.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

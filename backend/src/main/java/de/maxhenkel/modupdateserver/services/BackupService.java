@@ -1,19 +1,17 @@
 package de.maxhenkel.modupdateserver.services;
 
-import de.maxhenkel.modupdateserver.entities.Backup;
-import de.maxhenkel.modupdateserver.entities.Mod;
-import de.maxhenkel.modupdateserver.entities.ModWithUpdates;
+import de.maxhenkel.modupdateserver.dtos.*;
+import de.maxhenkel.modupdateserver.entities.ModEntity;
+import de.maxhenkel.modupdateserver.entities.UpdateEntity;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BackupService {
@@ -25,15 +23,17 @@ public class BackupService {
     private UpdateRepository updateRepository;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private ModelMapper modelMapper;
 
+    @Transactional
     public Backup getBackup() {
-        Aggregation agg = newAggregation(
-                lookup("updates", "_id", "mod", "updates")
-        );
-
-        AggregationResults<ModWithUpdates> aggregate = mongoTemplate.aggregate(agg, Mod.class, ModWithUpdates.class);
-        return new Backup(aggregate.getMappedResults());
+        List<ModWithUpdates> mods = new ArrayList<>();
+        for (ModEntity mod : modRepository.findAll()) {
+            ModWithUpdates modWithUpdates = modelMapper.map(mod, ModWithUpdates.class);
+            modWithUpdates.setUpdates(updateRepository.getAllByMod(mod.getModID()).stream().map(e -> modelMapper.map(e, UpdateWithoutIdAndMod.class)).toList());
+            mods.add(modWithUpdates);
+        }
+        return new Backup(mods);
     }
 
     /**
@@ -45,8 +45,17 @@ public class BackupService {
         if (modRepository.count() > 0L || updateRepository.count() > 0L) {
             return false;
         }
-        mongoTemplate.insertAll(backup.getMods().stream().map(Mod::new).toList());
-        mongoTemplate.insertAll(backup.getMods().stream().flatMap(modWithUpdates -> modWithUpdates.getUpdates().stream()).toList());
+
+        for (ModWithUpdates mod : backup.getMods()) {
+            ModEntity modEntity = modRepository.save(modelMapper.map(mod, ModEntity.class));
+            modRepository.save(modEntity);
+            for (UpdateWithoutIdAndMod update : mod.getUpdates()) {
+                UpdateEntity updateEntity = modelMapper.map(update, UpdateEntity.class);
+                updateEntity.setMod(modEntity.getModID());
+                updateRepository.save(updateEntity);
+            }
+        }
+
         return true;
     }
 

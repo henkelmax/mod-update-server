@@ -1,26 +1,17 @@
 package de.maxhenkel.modupdateserver.services;
 
-import de.maxhenkel.modupdateserver.entities.Mod;
-import de.maxhenkel.modupdateserver.entities.Update;
+import de.maxhenkel.modupdateserver.entities.ModEntity;
+import de.maxhenkel.modupdateserver.entities.UpdateEntity;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
+import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import java.util.*;
 
 @Service
 public class ForgeUpdateService {
@@ -29,72 +20,43 @@ public class ForgeUpdateService {
     private ModRepository modRepository;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private UpdateRepository updateRepository;
 
     @Autowired
     private MeterRegistry meterRegistry;
 
     @Cacheable(value = "forge_updates", cacheManager = "cacheManager")
     public Map<String, Object> modUpdatesForLoader(String loader, String modID) {
-        Optional<Mod> optionalMod = modRepository.findByModID(modID);
+        Optional<ModEntity> optionalMod = modRepository.findById(modID);
         if (optionalMod.isEmpty()) {
             return Collections.emptyMap();
         }
 
         Counter.builder("requests.update_check.cache_miss").tag("loader", loader).tag("modID", modID).register(meterRegistry).increment();
 
-        Mod mod = optionalMod.get();
+        ModEntity mod = optionalMod.get();
 
         Map<String, Object> forgeFormat = new HashMap<>();
         Map<String, String> promos = new HashMap<>();
 
-        MatchOperation matchByMod = Aggregation.match(Criteria.where("mod").is(mod.getId()).and("modLoader").is(loader));
+        List<UpdateEntity> latest = updateRepository.getLatestUpdateEntries(mod.getModID(), loader);
+        List<UpdateEntity> recommended = updateRepository.getRecommendedUpdateEntries(mod.getModID(), loader);
 
-        SortOperation sortByPublishDateDesc = Aggregation.sort(Sort.by(Sort.Order.desc("publishDate")));
-
-        GroupOperation groupByGameVersion = group("gameVersion")
-                .first("gameVersion").as("gameVersion")
-                .first("version").as("version")
-                .first("updateMessages").as("updateMessages");
-
-        Aggregation aggregationLatest = Aggregation.newAggregation(
-                matchByMod,
-                sortByPublishDateDesc,
-                groupByGameVersion
-        );
-
-        Aggregation aggregationRecommended = Aggregation.newAggregation(
-                matchByMod,
-                sortByPublishDateDesc,
-                Aggregation.match(Criteria.where("tags").in("recommended")),
-                groupByGameVersion
-        );
-
-        AggregationResults<ForgeUpdateEntry> resultLatest = mongoTemplate.aggregate(aggregationLatest, Update.class, ForgeUpdateEntry.class);
-        AggregationResults<ForgeUpdateEntry> resultRecommended = mongoTemplate.aggregate(aggregationRecommended, Update.class, ForgeUpdateEntry.class);
-
-        for (ForgeUpdateEntry entry : resultLatest.getMappedResults()) {
-            Map<String, String> o = (Map<String, String>) forgeFormat.computeIfAbsent(entry.getGameVersion(), e -> new HashMap<String, String>());
-            o.put(entry.getVersion(), StringUtils.join(entry.getUpdateMessages(), "\n"));
-            promos.put("%s-latest".formatted(entry.getGameVersion()), entry.getVersion());
+        for (UpdateEntity entity : latest) {
+            Map<String, String> o = (Map<String, String>) forgeFormat.computeIfAbsent(entity.getGameVersion(), e -> new HashMap<String, String>());
+            o.put(entity.getVersion(), StringUtils.join(entity.getUpdateMessages(), "\n"));
+            promos.put("%s-latest".formatted(entity.getGameVersion()), entity.getVersion());
         }
 
-        for (ForgeUpdateEntry entry : resultRecommended.getMappedResults()) {
-            Map<String, String> o = (Map<String, String>) forgeFormat.computeIfAbsent(entry.getGameVersion(), e -> new HashMap<String, String>());
-            o.put(entry.getVersion(), StringUtils.join(entry.getUpdateMessages(), "\n"));
-            promos.put("%s-recommended".formatted(entry.getGameVersion()), entry.getVersion());
+        for (UpdateEntity entity : recommended) {
+            Map<String, String> o = (Map<String, String>) forgeFormat.computeIfAbsent(entity.getGameVersion(), e -> new HashMap<String, String>());
+            o.put(entity.getVersion(), StringUtils.join(entity.getUpdateMessages(), "\n"));
+            promos.put("%s-recommended".formatted(entity.getGameVersion()), entity.getVersion());
         }
 
         forgeFormat.put("promos", promos);
         forgeFormat.put("homepage", mod.getWebsiteURL());
         return forgeFormat;
-    }
-
-    @Data
-    private static class ForgeUpdateEntry {
-        private String gameVersion;
-        private String version;
-        private String[] updateMessages;
     }
 
 }

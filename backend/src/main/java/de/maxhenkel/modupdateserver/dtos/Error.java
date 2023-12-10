@@ -1,4 +1,4 @@
-package de.maxhenkel.modupdateserver.entities;
+package de.maxhenkel.modupdateserver.dtos;
 
 import lombok.*;
 

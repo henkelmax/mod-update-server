@@ -9,3 +9,13 @@ management:
     web:
       exposure:
         include: [ "prometheus" ]
+
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driverClassName: org.postgresql.Driver
+  profiles:
+    active: prod

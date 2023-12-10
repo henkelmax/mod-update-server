@@ -1,14 +1,13 @@
 package de.maxhenkel.modupdateserver.repositories;
 
-import de.maxhenkel.modupdateserver.entities.ApiKey;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import de.maxhenkel.modupdateserver.entities.ApiKeyEntity;
+import org.springframework.data.repository.CrudRepository;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
-public interface ApiKeyRepository extends MongoRepository<ApiKey, ObjectId> {
+public interface ApiKeyRepository extends CrudRepository<ApiKeyEntity, UUID> {
 
-    Optional<ApiKey> findByApiKey(UUID apikey);
+    List<ApiKeyEntity> findAll();
 
 }

@@ -1,4 +1,4 @@
-package de.maxhenkel.modupdateserver.entities;
+package de.maxhenkel.modupdateserver.dtos;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

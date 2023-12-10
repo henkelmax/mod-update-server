@@ -1,7 +1,7 @@
 package de.maxhenkel.modupdateserver.aspects;
 
-import de.maxhenkel.modupdateserver.entities.ApiKey;
-import de.maxhenkel.modupdateserver.repositories.ApiKeyRepository;
+import de.maxhenkel.modupdateserver.dtos.ApiKey;
+import de.maxhenkel.modupdateserver.services.ApiKeyService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class AuthenticationAspect {
 
     @Autowired
-    ApiKeyRepository apiKeyRepository;
+    private ApiKeyService apiKeyService;
 
     @Autowired
     private Environment env;
@@ -59,11 +59,11 @@ public class AuthenticationAspect {
             return true;
         }
 
-        Optional<ApiKey> optionalApiKey = apiKeyRepository.findByApiKey(uuid);
-        if (optionalApiKey.isEmpty()) {
+        Optional<ApiKey> apikey = apiKeyService.getApikey(uuid);
+        if (apikey.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid API key");
         }
-        ApiKey apiKey = optionalApiKey.get();
+        ApiKey apiKey = apikey.get();
         return Arrays.stream(apiKey.getMods()).anyMatch(s -> s.equals("*") || s.equals(modID));
     }
 

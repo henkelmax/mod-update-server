@@ -1,6 +1,6 @@
 package de.maxhenkel.modupdateserver.configuration;
 
-import de.maxhenkel.modupdateserver.entities.Error;
+import de.maxhenkel.modupdateserver.dtos.Error;
 import jakarta.servlet.ServletException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

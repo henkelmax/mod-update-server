@@ -1,13 +1,13 @@
 package de.maxhenkel.modupdateserver.controllers;
 
 import de.maxhenkel.modupdateserver.annotations.ValidateApiKey;
-import de.maxhenkel.modupdateserver.entities.Update;
-import de.maxhenkel.modupdateserver.entities.UpdateWithMod;
+import de.maxhenkel.modupdateserver.dtos.Update;
+import de.maxhenkel.modupdateserver.dtos.UpdateWithoutIdAndMod;
+import de.maxhenkel.modupdateserver.dtos.UpdateWithMod;
 import de.maxhenkel.modupdateserver.services.UpdateService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class UpdateController {
 
     @ValidateApiKey
     @PostMapping("/updates/{modID}")
-    public ResponseEntity<?> addUpdate(@PathVariable("modID") String modID, @Valid @RequestBody Update update) {
+    public ResponseEntity<?> addUpdate(@PathVariable("modID") String modID, @Valid @RequestBody UpdateWithoutIdAndMod update) {
         if (!updateService.addUpdate(modID, update)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }
@@ -47,20 +47,20 @@ public class UpdateController {
     }
 
     @GetMapping("/updates/{modID}/{updateID}")
-    public ResponseEntity<Update> update(@PathVariable("modID") String modID, @PathVariable("updateID") ObjectId updateID) {
+    public ResponseEntity<Update> update(@PathVariable("modID") String modID, @PathVariable("updateID") long updateID) {
         return new ResponseEntity<>(updateService.getUpdate(modID, updateID), HttpStatus.OK);
     }
 
     @ValidateApiKey
     @PostMapping("/updates/{modID}/{updateID}")
-    public ResponseEntity<?> editUpdate(@PathVariable("modID") String modID, @PathVariable("updateID") ObjectId updateID, @Valid @RequestBody Update update) {
+    public ResponseEntity<?> editUpdate(@PathVariable("modID") String modID, @PathVariable("updateID") long updateID, @Valid @RequestBody UpdateWithoutIdAndMod update) {
         updateService.editUpdate(modID, updateID, update);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ValidateApiKey
     @DeleteMapping("/updates/{modID}/{updateID}")
-    public ResponseEntity<?> deleteUpdate(@PathVariable("modID") String modID, @PathVariable("updateID") ObjectId updateID) {
+    public ResponseEntity<?> deleteUpdate(@PathVariable("modID") String modID, @PathVariable("updateID") long updateID) {
         updateService.deleteUpdate(modID, updateID);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,7 +1,7 @@
 package de.maxhenkel.modupdateserver.controllers;
 
 import de.maxhenkel.modupdateserver.annotations.ValidateMasterKey;
-import de.maxhenkel.modupdateserver.entities.ApiKey;
+import de.maxhenkel.modupdateserver.dtos.ApiKey;
 import de.maxhenkel.modupdateserver.services.ApiKeyService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package de.maxhenkel.modupdateserver.controllers;
 
 import de.maxhenkel.modupdateserver.annotations.ValidateApiKey;
 import de.maxhenkel.modupdateserver.annotations.ValidateMasterKey;
-import de.maxhenkel.modupdateserver.entities.Backup;
+import de.maxhenkel.modupdateserver.dtos.Backup;
 import de.maxhenkel.modupdateserver.services.BackupService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
