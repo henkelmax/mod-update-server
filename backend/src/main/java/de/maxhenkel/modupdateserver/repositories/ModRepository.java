@@ -12,7 +12,7 @@ public interface ModRepository extends CrudRepository<ModEntity, String> {
 
     List<ModEntity> findAll();
 
-    @Query("SELECT new de.maxhenkel.modupdateserver.entities.ModAndUpdateCount(m, COUNT(u.id)) FROM update u, mod m WHERE m.modID = :modId AND m.modID = u.mod GROUP BY u.mod")
+    @Query("SELECT new de.maxhenkel.modupdateserver.entities.ModAndUpdateCount(m, COUNT(u.id)) FROM update u, mod m WHERE m.modID = :modId AND m.modID = u.mod GROUP BY u.mod, m.modID")
     Optional<ModAndUpdateCount> getModWithUpdateCount(String modId);
 
 }
