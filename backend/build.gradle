@@ -14,7 +14,7 @@ repositories {
 }
 
 bootRun {
-    environment "spring_profiles_active", "dev"
+    environment 'spring_profiles_active', 'dev'
 }
 
 dependencies {
@@ -56,6 +56,6 @@ tasks.withType(Test).configureEach { enabled = false }
 
 tasks {
     bootJar {
-        archiveFileName.set("app.jar")
+        archiveFileName.set('app.jar')
     }
 }

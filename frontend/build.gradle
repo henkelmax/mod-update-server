@@ -1,9 +1,9 @@
 plugins {
-    id "com.github.node-gradle.node" version "3.2.1"
+    id 'com.github.node-gradle.node' version '7.0.1'
 }
 
-tasks.register('serve', YarnTask) {
-    args = ['serve']
+tasks.register('dev', YarnTask) {
+    args = ['dev']
 }
 
 tasks.register('build', YarnTask) {
