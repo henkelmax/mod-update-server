@@ -1,9 +1,11 @@
 <template>
   <v-container>
     <v-card max-width="75%" class="mx-auto mt-4">
-      <v-card-title>
-        <span>Log In</span>
-      </v-card-title>
+      <v-toolbar color="secondary">
+        <v-toolbar-title>Log In</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn text color="white" @click="skip"> Skip </v-btn>
+      </v-toolbar>
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
