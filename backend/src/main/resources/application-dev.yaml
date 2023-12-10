@@ -7,6 +7,8 @@ spring:
     username: sa
     password: password
     driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 h2:
   console:
     enabled: true

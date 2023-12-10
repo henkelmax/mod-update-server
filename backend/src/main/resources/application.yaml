@@ -12,7 +12,6 @@ management:
 
 spring:
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
   datasource:
