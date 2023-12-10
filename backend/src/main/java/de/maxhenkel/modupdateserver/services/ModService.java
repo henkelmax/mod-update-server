@@ -1,6 +1,7 @@
 package de.maxhenkel.modupdateserver.services;
 
 import de.maxhenkel.modupdateserver.dtos.Mod;
+import de.maxhenkel.modupdateserver.dtos.ModWithUpdateCount;
 import de.maxhenkel.modupdateserver.dtos.ModWithoutModId;
 import de.maxhenkel.modupdateserver.entities.ModEntity;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
@@ -71,8 +72,12 @@ public class ModService {
         return true;
     }
 
-    public Optional<Mod> getMod(String modID) {
-        return modRepository.findById(modID).map(modEntity -> modelMapper.map(modEntity, Mod.class));
+    public Optional<ModWithUpdateCount> getMod(String modID) {
+        return modRepository.getModWithUpdateCount(modID).map(o -> {
+            ModWithUpdateCount mod = modelMapper.map(o.getMod(), ModWithUpdateCount.class);
+            mod.setUpdateCount(o.getUpdateCount());
+            return mod;
+        });
     }
 
     /**

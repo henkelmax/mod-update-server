@@ -5,7 +5,7 @@ import de.maxhenkel.modupdateserver.dtos.Update;
 import de.maxhenkel.modupdateserver.dtos.UpdateWithoutIdAndMod;
 import de.maxhenkel.modupdateserver.entities.ModEntity;
 import de.maxhenkel.modupdateserver.entities.UpdateEntity;
-import de.maxhenkel.modupdateserver.entities.UpdateWithMod;
+import de.maxhenkel.modupdateserver.entities.ModAndUpdate;
 import de.maxhenkel.modupdateserver.repositories.ModRepository;
 import de.maxhenkel.modupdateserver.repositories.UpdateRepository;
 import jakarta.transaction.Transactional;
@@ -34,7 +34,7 @@ public class UpdateService {
     private ModelMapper modelMapper;
 
     public List<de.maxhenkel.modupdateserver.dtos.UpdateWithMod> getUpdates(int amount, int page) {
-        Page<UpdateWithMod> p = updateRepository.getAllUpdatesWithMod(PageRequest.of(page, amount));
+        Page<ModAndUpdate> p = updateRepository.getAllUpdatesWithMod(PageRequest.of(page, amount));
         return p.get().map(e -> {
             de.maxhenkel.modupdateserver.dtos.UpdateWithMod updateWithMod = modelMapper.map(e.getUpdate(), de.maxhenkel.modupdateserver.dtos.UpdateWithMod.class);
             updateWithMod.setMod(modelMapper.map(e.getMod(), Mod.class));

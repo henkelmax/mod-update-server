@@ -1,7 +1,7 @@
 package de.maxhenkel.modupdateserver.repositories;
 
 import de.maxhenkel.modupdateserver.entities.UpdateEntity;
-import de.maxhenkel.modupdateserver.entities.UpdateWithMod;
+import de.maxhenkel.modupdateserver.entities.ModAndUpdate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -16,8 +16,8 @@ public interface UpdateRepository extends CrudRepository<UpdateEntity, Long> {
 
     Optional<UpdateEntity> findFirstByModAndId(String modId, Long id);
 
-    @Query("SELECT new de.maxhenkel.modupdateserver.entities.UpdateWithMod(m, u) FROM update u, mod m WHERE u.mod = m.modID ORDER BY u.publishDate DESC")
-    Page<UpdateWithMod> getAllUpdatesWithMod(Pageable pageable);
+    @Query("SELECT new de.maxhenkel.modupdateserver.entities.ModAndUpdate(m, u) FROM update u, mod m WHERE u.mod = m.modID ORDER BY u.publishDate DESC")
+    Page<ModAndUpdate> getAllUpdatesWithMod(Pageable pageable);
 
     List<UpdateEntity> getAllByMod(String mod);
 

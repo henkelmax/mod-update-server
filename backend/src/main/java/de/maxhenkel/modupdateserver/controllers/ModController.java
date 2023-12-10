@@ -2,6 +2,7 @@ package de.maxhenkel.modupdateserver.controllers;
 
 import de.maxhenkel.modupdateserver.annotations.ValidateApiKey;
 import de.maxhenkel.modupdateserver.dtos.Mod;
+import de.maxhenkel.modupdateserver.dtos.ModWithUpdateCount;
 import de.maxhenkel.modupdateserver.dtos.ModWithoutModId;
 import de.maxhenkel.modupdateserver.services.ModService;
 import jakarta.validation.Valid;
@@ -45,8 +46,8 @@ public class ModController {
     }
 
     @GetMapping("/mods/{modID}")
-    public ResponseEntity<Mod> getMod(@PathVariable("modID") String modID) {
-        Optional<Mod> optionalMod = modService.getMod(modID);
+    public ResponseEntity<ModWithUpdateCount> getMod(@PathVariable("modID") String modID) {
+        Optional<ModWithUpdateCount> optionalMod = modService.getMod(modID);
         if (optionalMod.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Mod does not exist");
         }

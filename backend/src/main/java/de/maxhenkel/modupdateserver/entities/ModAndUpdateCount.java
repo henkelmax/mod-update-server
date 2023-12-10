@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UpdateWithMod {
+public class ModAndUpdateCount {
 
     private ModEntity mod;
-    private UpdateEntity update;
+    private long updateCount;
 
 }
