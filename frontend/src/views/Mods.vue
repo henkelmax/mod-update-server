@@ -3,13 +3,13 @@
     <v-toolbar color="secondary">
       <v-toolbar-title>Mods</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn text color="white" @click="router.push('latest')"> Latest </v-btn>
-      <v-btn text color="white" @click="router.push('mod')"> Add Mod </v-btn>
-      <v-btn text color="white" @click="router.push('import')"> Import Updates </v-btn>
-      <v-btn text color="white" @click="router.push('backup')"> Backup </v-btn>
-      <v-btn text color="white" @click="router.push('restore')"> Restore </v-btn>
-      <v-btn text color="white" @click="router.push('apikeys')"> API Keys </v-btn>
-      <v-btn text color="white" @click="doLogout"> Log Out </v-btn>
+      <v-btn text color="white" @click="router.push('latest')"> Latest</v-btn>
+      <v-btn text color="white" @click="router.push('mod')"> Add Mod</v-btn>
+      <v-btn text color="white" @click="router.push('import')"> Import Updates</v-btn>
+      <v-btn text color="white" @click="router.push('backup')"> Backup</v-btn>
+      <v-btn text color="white" @click="router.push('restore')"> Restore</v-btn>
+      <v-btn text color="white" @click="router.push('apikeys')"> API Keys</v-btn>
+      <v-btn text color="white" @click="doLogout"> Log Out</v-btn>
     </v-toolbar>
     <v-text-field
       class="mx-4"
@@ -56,7 +56,7 @@
   <v-container>
     <v-dialog v-model="dialog" max-width="35%">
       <v-card>
-        <v-card-title class="headline"> Delete {{ modToDelete.name }} </v-card-title>
+        <v-card-title class="headline"> Delete {{ modToDelete.name }}</v-card-title>
         <v-card-text>Do you really want to delete this mod?</v-card-text>
         <v-card-actions>
           <div class="flex-grow-1"></div>
@@ -70,9 +70,8 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { getMods, deleteMod } from "@/services";
+import { getMods, deleteMod, showHttpErrorMessage } from "@/services";
 import { logout } from "@/stores/applicationStore";
-import { showHttpErrorMessage } from "@/services/messages";
 import router from "@/router";
 
 const mods = ref([]);
@@ -86,7 +85,8 @@ onMounted(async () => {
 
 const filteredMods = computed(() => {
   return mods.value.filter((m) =>
-    m.name.toLowerCase().includes(searchText.value.toLowerCase())
+    m.name.toLowerCase()
+      .includes(searchText.value.toLowerCase())
   );
 });
 
@@ -99,11 +99,17 @@ function updateMods() {
 }
 
 function openUpdates(modID) {
-  router.push({ path: "updates", query: { modID: modID } });
+  router.push({
+    path: "updates",
+    query: { modID: modID }
+  });
 }
 
 function editMod(modID) {
-  router.push({ path: "mod", query: { modID: modID } });
+  router.push({
+    path: "mod",
+    query: { modID: modID }
+  });
 }
 
 function removeMod() {

@@ -31,7 +31,10 @@
               </v-chip>
             </v-list-item-title>
             <div class="mb-1 text-grey-lighten-1 text-subtitle-2">
-              {{ `Released ${moment(update.publishDate).fromNow()}` }}
+              {{
+                `Released ${moment(update.publishDate)
+                  .fromNow()}`
+              }}
             </div>
             <div v-for="(str, idx) in update.updateMessages" :key="idx" class="text-grey">
               {{ str }}
@@ -71,10 +74,11 @@
           <v-toolbar-title>Delete update?</v-toolbar-title>
         </v-toolbar>
         <v-card-text
-          >Do you really want to delete
+        >Do you really want to delete
           {{
             `"[${updateToDelete.gameVersion}] ${mod.name} ${updateToDelete.version}"`
-          }}?</v-card-text
+          }}?
+        </v-card-text
         >
         <v-card-actions>
           <div class="flex-grow-1"></div>
@@ -89,8 +93,7 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
-import { getMod, getUpdates, removeUpdate } from "@/services";
-import { showHttpErrorMessage } from "@/services/messages";
+import { getMod, getUpdates, removeUpdate, showHttpErrorMessage } from "@/services";
 import router from "@/router";
 import moment from "moment";
 
@@ -153,14 +156,17 @@ function openDeleteDialog(update) {
 function editUpdate(updateID) {
   router.push({
     path: "update",
-    query: { modID: modId.value, updateID: updateID },
+    query: {
+      modID: modId.value,
+      updateID: updateID
+    }
   });
 }
 
 function addUpdate() {
   router.push({
     path: "update",
-    query: { modID: modId.value },
+    query: { modID: modId.value }
   });
 }
 

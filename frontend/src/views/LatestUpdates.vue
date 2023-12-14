@@ -30,7 +30,10 @@
               </v-chip>
             </v-list-item-title>
             <div class="mb-1 text-grey-lighten-1 text-subtitle-2">
-              {{ `Released ${moment(update.publishDate).fromNow()}` }}
+              {{
+                `Released ${moment(update.publishDate)
+                  .fromNow()}`
+              }}
             </div>
             <div v-for="(str, idx) in update.updateMessages" :key="idx" class="text-grey">
               {{ str }}
@@ -41,15 +44,14 @@
       </v-list>
     </template>
     <template v-else>
-      <v-card-text class="text-center"> No updates available </v-card-text>
+      <v-card-text class="text-center"> No updates available</v-card-text>
     </template>
   </v-card>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { getLatestUpdates } from "@/services";
-import { showHttpErrorMessage } from "@/services/messages";
+import { getLatestUpdates, showHttpErrorMessage } from "@/services";
 import router from "@/router";
 import moment from "moment";
 

@@ -38,8 +38,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { getMods, addUpdate } from "@/services";
-import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
+import { getMods, addUpdate, showHttpErrorMessage, showErrorMessage } from "@/services";
 import router from "@/router";
 import moment from "moment";
 
@@ -53,9 +52,10 @@ const rules = [
   (value) =>
     !value ||
     !value.name ||
-    value.name.toLowerCase().endsWith(".json") ||
+    value.name.toLowerCase()
+      .endsWith(".json") ||
     "The file has to be a .json file",
-  (value) => !value || value.size < 2000000 || "The file should be smaller than 2 MB",
+  (value) => !value || value.size < 2000000 || "The file should be smaller than 2 MB"
 ];
 const stringRequiredRules = [(v) => !!v || "This field is required"];
 
@@ -119,23 +119,28 @@ function toUpdates(json) {
       continue;
     }
     let count = 10;
-    for (let modVersion of Object.keys(json[mcVersion]).reverse()) {
+    for (let modVersion of Object.keys(json[mcVersion])
+      .reverse()) {
       const update = {
-        publishDate: moment().subtract(count, "seconds").format(),
+        publishDate: moment()
+          .subtract(count, "seconds")
+          .format(),
         gameVersion: mcVersion,
         version: modVersion,
         updateMessages: [json[mcVersion][modVersion]],
         releaseType: "release",
-        tags: [],
+        tags: []
       };
 
       if (recommendedUpdates[mcVersion] && recommendedUpdates[mcVersion] === modVersion) {
         update.tags.push("recommended");
-        update.publishDate = moment().format();
+        update.publishDate = moment()
+          .format();
       }
 
       if (latestUpdates[mcVersion] && latestUpdates[mcVersion] === modVersion) {
-        update.publishDate = moment().format();
+        update.publishDate = moment()
+          .format();
       }
 
       updates.push(update);

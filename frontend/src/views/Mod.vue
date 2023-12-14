@@ -3,8 +3,9 @@
     <v-card max-width="75%" class="mx-auto mt-4">
       <v-toolbar color="secondary">
         <v-toolbar-title>{{
-          newMod ? "Add a new mod" : `Edit ${mod.name}`
-        }}</v-toolbar-title>
+            newMod ? "Add a new mod" : `Edit ${mod.name}`
+          }}
+        </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn text color="white" @click="back">Back</v-btn>
       </v-toolbar>
@@ -71,8 +72,9 @@
         <v-spacer></v-spacer>
         <v-btn class="mr-4 mb-2" @click="back">Back</v-btn>
         <v-btn :disabled="!valid" color="green" class="mr-6 mb-2" @click="validate">{{
-          newMod ? "Add" : "Update"
-        }}</v-btn>
+            newMod ? "Add" : "Update"
+          }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -81,8 +83,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { getMod, addMod, editMod, getErrorMessage } from "@/services";
-import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
+import { getMod, addMod, editMod, showHttpErrorMessage, showErrorMessage } from "@/services";
 import router from "@/router";
 
 const route = useRoute();
@@ -95,7 +96,7 @@ const valid = ref(false);
 
 const modIDRules = [
   (v) => !!v || "This field is required",
-  (v) => /^[a-z-_]*$/.test(v) || "The Mod ID can only contain [a-z]",
+  (v) => /^[a-z-_]*$/.test(v) || "The Mod ID can only contain [a-z]"
 ];
 
 const stringRequiredRules = [(v) => !!v || "This field is required"];
@@ -131,7 +132,7 @@ function validate() {
       description: mod.value.description,
       websiteURL: mod.value.websiteURL,
       downloadURL: mod.value.downloadURL,
-      issueURL: mod.value.issueURL,
+      issueURL: mod.value.issueURL
     };
     editMod(mod.value.modID, updatedMod)
       .then(() => {

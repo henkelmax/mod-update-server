@@ -30,8 +30,7 @@ import { ref } from "vue";
 import moment from "moment";
 import download from "js-file-download";
 import router from "@/router";
-import { backup } from "@/services";
-import { showHttpErrorMessage } from "@/services/messages";
+import { backup, showHttpErrorMessage } from "@/services";
 
 const processing = ref(false);
 
@@ -45,7 +44,8 @@ async function runBackup() {
     const backupJson = await backup();
     download(
       JSON.stringify(backupJson, null, 2),
-      `backup_${moment().format("YYYY-MM-DD-HH:mm")}.json`
+      `backup_${moment()
+        .format("YYYY-MM-DD-HH:mm")}.json`
     );
   } catch (err) {
     showHttpErrorMessage(err);

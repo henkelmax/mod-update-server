@@ -63,8 +63,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { getApiKeys, deleteApiKey, addApiKey } from "@/services";
-import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
+import { getApiKeys, deleteApiKey, addApiKey, showHttpErrorMessage, showErrorMessage } from "@/services";
 import router from "@/router";
 
 const apiKeys = ref([]);

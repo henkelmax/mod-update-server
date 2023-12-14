@@ -29,7 +29,8 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn class="mr-6 mb-2" color="green" @click="restoreBackup" :disabled="!valid">
-          Restore</v-btn
+          Restore
+        </v-btn
         >
       </v-card-actions>
     </v-card>
@@ -39,8 +40,7 @@
 <script setup>
 import { ref } from "vue";
 import router from "@/router";
-import { getMods, restore } from "@/services";
-import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
+import { getMods, restore, showHttpErrorMessage, showErrorMessage } from "@/services";
 
 const valid = ref(false);
 const file = ref(null);
@@ -51,8 +51,9 @@ const rules = [
   (value) =>
     !value ||
     !value.name ||
-    value.name.toLowerCase().endsWith(".json") ||
-    "The file has to be a .json file",
+    value.name.toLowerCase()
+      .endsWith(".json") ||
+    "The file has to be a .json file"
 ];
 
 function back() {

@@ -2,8 +2,9 @@
   <v-card max-width="75%" class="mx-auto mt-4">
     <v-toolbar color="secondary">
       <v-toolbar-title>{{
-        newUpdate ? "Add a new update" : `Edit ${mod.name} ${update.version}`
-      }}</v-toolbar-title>
+          newUpdate ? "Add a new update" : `Edit ${mod.name} ${update.version}`
+        }}
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn text color="white" @click="back">Back</v-btn>
     </v-toolbar>
@@ -89,8 +90,9 @@
       <v-spacer></v-spacer>
       <v-btn class="mr-4 mb-2" @click="back">Back</v-btn>
       <v-btn :disabled="!valid" color="green" class="mr-6 mb-2" @click="validate">{{
-        newUpdate ? "Add" : "Update"
-      }}</v-btn>
+          newUpdate ? "Add" : "Update"
+        }}
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -98,8 +100,7 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
-import { getMod, getUpdate, addUpdate, editUpdate } from "@/services";
-import { showHttpErrorMessage, showErrorMessage } from "@/services/messages";
+import { getMod, getUpdate, addUpdate, editUpdate, showHttpErrorMessage, showErrorMessage } from "@/services";
 import moment from "moment";
 import router from "@/router";
 
@@ -112,25 +113,28 @@ const newUpdate = ref(true);
 const update = ref({
   modLoader: "forge",
   tags: [],
-  publishDate: moment().format(),
-  releaseType: "alpha",
+  publishDate: moment()
+    .format(),
+  releaseType: "alpha"
 });
 const mod = ref({});
 const valid = ref(false);
-const publishTime = ref(moment().format("HH:mm"));
-const publishDate = ref(moment().format("YYYY-MM-DD"));
+const publishTime = ref(moment()
+  .format("HH:mm"));
+const publishDate = ref(moment()
+  .format("YYYY-MM-DD"));
 
 const stringRequiredRules = [(v) => !!v || "This field is required"];
 
 const timeRules = [
   (v) => !!v || "This field is required",
-  (v) => /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/.test(v) || "Format: hh:mm",
+  (v) => /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/.test(v) || "Format: hh:mm"
 ];
 
 const dateRules = [
   (v) => !!v || "This field is required",
   (v) =>
-    /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(v) || "Format: yyyy-mm-dd",
+    /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(v) || "Format: yyyy-mm-dd"
 ];
 
 onMounted(async () => {
@@ -150,8 +154,10 @@ onMounted(async () => {
       update.value = response;
       delete update.value._id;
       delete update.value.mod;
-      publishTime.value = moment(update.value.publishDate).format("HH:mm");
-      publishDate.value = moment(update.value.publishDate).format("YYYY-MM-DD");
+      publishTime.value = moment(update.value.publishDate)
+        .format("HH:mm");
+      publishDate.value = moment(update.value.publishDate)
+        .format("YYYY-MM-DD");
     })
     .catch(showHttpErrorMessage);
 });
@@ -165,7 +171,7 @@ const updateMessages = computed({
   },
   set(value) {
     update.value.updateMessages = value.split("\n");
-  },
+  }
 });
 
 watch(publishTime, async (time) => {
@@ -175,7 +181,7 @@ watch(publishTime, async (time) => {
       hour: val.hour(),
       minute: val.minute(),
       second: 0,
-      millisecond: 0,
+      millisecond: 0
     })
     .format();
 });
@@ -186,7 +192,7 @@ watch(publishDate, async (date) => {
     .set({
       date: val.date(),
       month: val.month(),
-      year: val.year(),
+      year: val.year()
     })
     .format();
 });
@@ -206,7 +212,7 @@ function validate() {
       .then(() => {
         router.push({
           path: "updates",
-          query: { modID: modId.value },
+          query: { modID: modId.value }
         });
       })
       .catch(showHttpErrorMessage);
@@ -215,7 +221,7 @@ function validate() {
       .then(() => {
         router.push({
           path: "updates",
-          query: { modID: modId.value },
+          query: { modID: modId.value }
         });
       })
       .catch(showHttpErrorMessage);
