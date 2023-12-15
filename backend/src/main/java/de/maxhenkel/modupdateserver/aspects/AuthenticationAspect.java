@@ -70,7 +70,7 @@ public class AuthenticationAspect {
     @Nullable
     public UUID getMasterKey() {
         try {
-            if (env.acceptsProfiles(Profiles.of("dev"))) {
+            if (env.acceptsProfiles(Profiles.of("!prod"))) {
                 return UUID.fromString(env.getProperty("modupdateserver.masterkey", ""));
             }
             return UUID.fromString(System.getenv("MASTER_KEY"));
