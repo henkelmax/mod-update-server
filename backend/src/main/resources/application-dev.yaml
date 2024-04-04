@@ -9,6 +9,6 @@ spring:
     driverClassName: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-h2:
-  console:
-    enabled: true
+  h2:
+    console:
+      enabled: true
