@@ -2,7 +2,7 @@
 
 A server for Minecraft modders that manages all your mod updates.
 It provides a web interface and REST API to manage everything.
-This can be used directly for the [Forge Update Checker](https://docs.minecraftforge.net/en/1.20.x/misc/updatechecker/).
+This can be used directly for the [Forge Update Checker](https://docs.minecraftforge.net/en/1.20.x/misc/updatechecker/)/[NeoForge Update Checker](https://docs.neoforged.net/docs/misc/updatechecker).
 
 ## Useful Links
 
