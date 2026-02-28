@@ -1,0 +1,62 @@
+package http
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"update-server-go/database"
+)
+
+type httpServer struct {
+	db *database.Database
+}
+
+func (server *httpServer) respondJSON(w http.ResponseWriter, r *http.Request, payload any) {
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(payload)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+}
+
+func (server *httpServer) respondError(w http.ResponseWriter, r *http.Request, status int, detail string) {
+	w.Header().Set("Content-Type", "application/problem+json")
+	problem := ProblemDetails{
+		Type:     "about:blank",
+		Title:    http.StatusText(status),
+		Status:   status,
+		Detail:   detail,
+		Instance: r.URL.Path,
+	}
+
+	err := json.NewEncoder(w).Encode(problem)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(status)
+}
+
+type ProblemDetails struct {
+	Type     string `json:"type,omitempty"`
+	Title    string `json:"title,omitempty"`
+	Status   int    `json:"status,omitempty"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
+
+func RunHttpServer(db *database.Database, port int) error {
+	mux := http.NewServeMux()
+
+	httpServer := httpServer{db: db}
+
+	mux.HandleFunc("GET /mods", httpServer.handleGetMods)
+	mux.HandleFunc("POST /mods/add", httpServer.handleAddMod)
+
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+	if err != nil {
+		return err
+	}
+	return nil
+}

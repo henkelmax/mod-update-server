@@ -38,3 +38,6 @@ out/
 
 mongo*/
 h2/
+*.db
+*.db-shm
+*.db-wal

@@ -1,0 +1,15 @@
+### Get all mods
+GET {{baseUrl}}/mods
+
+### Add a new mod
+POST {{baseUrl}}/mods/add
+Content-Type: application/json
+
+{
+  "modID": "test",
+  "name": "Test Mod",
+  "description": "",
+  "websiteURL": "",
+  "downloadURL": "",
+  "issueURL": ""
+}
