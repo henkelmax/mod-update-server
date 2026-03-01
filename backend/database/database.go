@@ -60,6 +60,11 @@ CREATE TABLE IF NOT EXISTS updates (
     mod_loader TEXT,
     FOREIGN KEY(mod_id) REFERENCES mods(mod_id) ON DELETE CASCADE
 );
+
+CREATE TABLE api_keys (
+    api_key TEXT PRIMARY KEY,
+    mods TEXT
+);
 `)
 	if err != nil {
 		_ = db.Close()
@@ -120,6 +125,15 @@ func (db *Database) DoesModExist(modId string) (bool, error) {
 
 	}
 	return exists, nil
+}
+
+func (db *Database) GetAuthorizedMods(apiKey string) ([]string, error) {
+	var mods StringArray
+	err := db.db.QueryRow("SELECT mods FROM api_keys WHERE api_key = ?;", apiKey).Scan(&mods)
+	if err != nil {
+		return nil, err
+	}
+	return mods, nil
 }
 
 func (db *Database) Close() error {
