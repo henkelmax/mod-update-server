@@ -1,4 +1,10 @@
 
+### Get updates
+GET {{baseUrl}}/updates/test
+
+### Get updates with pageable
+GET {{baseUrl}}/updates/test?amount=1&page=0
+
 ### Add a new update
 POST {{baseUrl}}/updates/test
 apikey: {{apiKey}}

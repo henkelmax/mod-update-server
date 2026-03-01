@@ -2,8 +2,10 @@ package http
 
 import (
 	"errors"
+	"math"
 	"net/http"
 	"regexp"
+	"strconv"
 	"time"
 	"update-server-go/database"
 )
@@ -28,6 +30,31 @@ type UpdateWithModDto struct {
 type UpdateWithIdAndModDto struct {
 	ID int64 `json:"_id"`
 	UpdateWithModDto
+}
+
+func mapUpdateDto(update database.Update) UpdateWithIdAndModDto {
+	return UpdateWithIdAndModDto{
+		ID: update.ID,
+		UpdateWithModDto: UpdateWithModDto{
+			Mod: update.Mod,
+			UpdateDto: UpdateDto{
+				PublishDate:    &update.PublishDate,
+				GameVersion:    update.GameVersion,
+				Version:        update.Version,
+				UpdateMessages: update.UpdateMessages,
+				ReleaseType:    update.ReleaseType,
+				Tags:           update.Tags,
+			},
+		},
+	}
+}
+
+func mapUpdateDtos(mods []database.Update) []UpdateWithIdAndModDto {
+	dtos := make([]UpdateWithIdAndModDto, len(mods))
+	for i, m := range mods {
+		dtos[i] = mapUpdateDto(m)
+	}
+	return dtos
 }
 
 func (update *UpdateDto) Validate(modId string) (*database.Update, error) {
@@ -58,6 +85,23 @@ func (update *UpdateDto) Validate(modId string) (*database.Update, error) {
 		Tags:           update.Tags,
 		ModLoader:      update.ModLoader,
 	}, nil
+}
+
+func (server *httpServer) handleGetUpdates(w http.ResponseWriter, r *http.Request) {
+	modId := r.PathValue("modID")
+	if modId == "" {
+		server.respondError(w, r, http.StatusBadRequest, "mod ID is required")
+		return
+	}
+	amount := getQueryRange(r, "amount", 1, 128, 16)
+	page := getQueryRange(r, "page", 0, math.MaxInt, 0)
+	mods, err := server.db.GetUpdates(modId, amount, page)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	server.respondJSON(w, r, mapUpdateDtos(mods))
 }
 
 func (server *httpServer) handleAddUpdate(w http.ResponseWriter, r *http.Request) {
@@ -95,4 +139,22 @@ func (server *httpServer) handleAddUpdate(w http.ResponseWriter, r *http.Request
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func getQueryRange(r *http.Request, param string, min int, max int, def int) int {
+	strValue := r.URL.Query().Get(param)
+	if strValue == "" {
+		return def
+	}
+	value, err := strconv.Atoi(strValue)
+	if err != nil {
+		return def
+	}
+	if value < min {
+		return min
+	}
+	if value > max {
+		return max
+	}
+	return value
 }

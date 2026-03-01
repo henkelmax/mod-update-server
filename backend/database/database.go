@@ -23,9 +23,9 @@ type Update struct {
 	PublishDate    time.Time
 	GameVersion    string
 	Version        string
-	UpdateMessages []string
+	UpdateMessages StringArray
 	ReleaseType    string
-	Tags           []string
+	Tags           StringArray
 	ModLoader      string
 }
 
@@ -211,6 +211,34 @@ INSERT INTO updates (mod_id, publish_date, game_version, version, update_message
 		return fmt.Errorf("failed to add update to database: %d rows affected", affected)
 	}
 	return nil
+}
+
+func (db *Database) GetUpdates(modId string, amount int, page int) ([]Update, error) {
+	rows, err := db.db.Query(`
+SELECT id, mod_id, publish_date, game_version, version, update_messages, release_type, tags, mod_loader FROM updates WHERE mod_id = ? ORDER BY publish_date DESC LIMIT ? OFFSET ?;
+`, modId, amount, page*amount)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var updates []Update
+
+	for rows.Next() {
+		var update Update
+		err := rows.Scan(&update.ID, &update.Mod, &update.PublishDate, &update.GameVersion, &update.Version, &update.UpdateMessages, &update.ReleaseType, &update.Tags, &update.ModLoader)
+		if err != nil {
+			return nil, err
+		}
+		updates = append(updates, update)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return updates, nil
 }
 
 func (db *Database) Close() error {
