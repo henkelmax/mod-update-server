@@ -56,6 +56,28 @@ func mapModDtos(mods []database.Mod) []ModDto {
 	return dtos
 }
 
+type ModWithoutIdDto struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	WebsiteURL  string `json:"websiteURL"`
+	DownloadURL string `json:"downloadURL"`
+	IssueURL    string `json:"issueURL"`
+}
+
+func (mod *ModWithoutIdDto) Validate(modId string) (*database.Mod, error) {
+	if strings.TrimSpace(mod.Name) == "" {
+		return nil, errors.New("mod name cannot be empty")
+	}
+	return &database.Mod{
+		ModID:       modId,
+		Name:        mod.Name,
+		Description: mod.Description,
+		WebsiteURL:  mod.WebsiteURL,
+		DownloadURL: mod.DownloadURL,
+		IssueURL:    mod.IssueURL,
+	}, nil
+}
+
 func (server *httpServer) handleGetMods(w http.ResponseWriter, r *http.Request) {
 	mods, err := server.db.GetAllMods()
 	if err != nil {
@@ -81,7 +103,7 @@ func (server *httpServer) handleAddMod(w http.ResponseWriter, r *http.Request) {
 
 	exists, err := server.db.DoesModExist(modDbObject.ModID)
 	if err != nil {
-		server.respondError(w, r, http.StatusInternalServerError, "mod already exists")
+		server.respondError(w, r, http.StatusInternalServerError, "failed to check if mod exists")
 		return
 	}
 
@@ -96,4 +118,34 @@ func (server *httpServer) handleAddMod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (server *httpServer) handleEditMod(w http.ResponseWriter, r *http.Request) {
+	var mod ModWithoutIdDto
+	err := json.NewDecoder(r.Body).Decode(&mod)
+	if err != nil {
+		server.respondError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	modId := r.PathValue("modID")
+	exists, err := server.db.DoesModExist(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, "failed to check if mod exists")
+		return
+	}
+	if !exists {
+		server.respondError(w, r, http.StatusNotFound, "mod not found")
+		return
+	}
+	modDbObject, err := mod.Validate(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	err = server.db.UpdateMod(*modDbObject)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

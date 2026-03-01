@@ -3,13 +3,26 @@ GET {{baseUrl}}/mods
 
 ### Add a new mod
 POST {{baseUrl}}/mods/add
-apikey: 00000000-0000-0000-0000-000000000000
+apikey: {{apiKey}}
 Content-Type: application/json
 
 {
   "modID": "test",
   "name": "Test Mod",
   "description": "",
+  "websiteURL": "",
+  "downloadURL": "",
+  "issueURL": ""
+}
+
+### Update a mod
+POST {{baseUrl}}/mods/edit/test
+apikey: {{apiKey}}
+Content-Type: application/json
+
+{
+  "name": "Test Mod",
+  "description": "ABC",
   "websiteURL": "",
   "downloadURL": "",
   "issueURL": ""

@@ -12,17 +12,16 @@ func main() {
 	log.InitializeLogging()
 
 	db, err := database.InitializeDatabase()
+	if err != nil {
+		slog.Error(fmt.Sprintf("Failed to initialize database: %s", err.Error()))
+		return
+	}
 	defer func(db *database.Database) {
 		err := db.Close()
 		if err != nil {
 			slog.Error(fmt.Sprintf("Failed to close database: %s", err.Error()))
 		}
 	}(db)
-
-	if err != nil {
-		slog.Error(fmt.Sprintf("Failed to initialize database: %s", err.Error()))
-		return
-	}
 
 	// TODO Use environment variable
 	port := 8080

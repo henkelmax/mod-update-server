@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS updates (
     FOREIGN KEY(mod_id) REFERENCES mods(mod_id) ON DELETE CASCADE
 );
 
-CREATE TABLE api_keys (
+CREATE TABLE IF NOT EXISTS api_keys (
     api_key TEXT PRIMARY KEY,
     mods TEXT
 );
@@ -134,6 +134,23 @@ func (db *Database) GetAuthorizedMods(apiKey string) ([]string, error) {
 		return nil, err
 	}
 	return mods, nil
+}
+
+func (db *Database) UpdateMod(mod Mod) error {
+	exec, err := db.db.Exec(`
+UPDATE mods SET name = ?, description = ?, website_url = ?, download_url = ?, issue_url = ? WHERE mod_id = ?;
+`, mod.Name, mod.Description, mod.WebsiteURL, mod.DownloadURL, mod.IssueURL, mod.ModID)
+	if err != nil {
+		return err
+	}
+	affected, err := exec.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected != 1 {
+		return fmt.Errorf("failed to add mod to database: %d rows affected", affected)
+	}
+	return nil
 }
 
 func (db *Database) Close() error {
