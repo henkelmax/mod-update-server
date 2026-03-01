@@ -80,6 +80,8 @@ func RunHttpServer(db *database.Database, port int) error {
 
 	mux.HandleFunc("GET /check/{loader}/{modID}", httpServer.handleCheckUpdates)
 
+	mux.Handle("GET /backup", chainMiddlewares(http.HandlerFunc(httpServer.handleBackup), httpServer.masterKeyMiddleware))
+
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
 		return err

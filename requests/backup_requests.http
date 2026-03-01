@@ -1,0 +1,3 @@
+### Check for updates
+GET {{baseUrl}}/backup
+apikey: {{apiKey}}
