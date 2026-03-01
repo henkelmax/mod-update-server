@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
+	"update-server-go/utils"
 )
 
-//TODO Implement caching
+var forgeCache = utils.NewCache[map[string]any](5 * time.Minute)
 
 func (server *httpServer) handleGetForgeUpdates(w http.ResponseWriter, r *http.Request) {
 	server.handleGetForgeUpdatesForLoader(w, r, "forge")
@@ -31,6 +33,14 @@ func (server *httpServer) handleGetForgeUpdatesForLoader(w http.ResponseWriter, 
 		server.respondError(w, r, http.StatusNotFound, "mod not found")
 		return
 	}
+
+	cacheKey := cacheKey(modId, loader)
+	cachedValue := forgeCache.Get(cacheKey)
+	if cachedValue != nil {
+		server.respondJSON(w, r, cachedValue)
+		return
+	}
+
 	mod, err := server.db.GetMod(modId)
 	if err != nil {
 		server.respondError(w, r, http.StatusInternalServerError, err.Error())
@@ -76,4 +86,6 @@ func (server *httpServer) handleGetForgeUpdatesForLoader(w http.ResponseWriter, 
 	forgeFormat["promos"] = promos
 	forgeFormat["homepage"] = mod.WebsiteURL
 	server.respondJSON(w, r, forgeFormat)
+
+	forgeCache.Set(cacheKey, forgeFormat)
 }

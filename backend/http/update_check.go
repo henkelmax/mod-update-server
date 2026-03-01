@@ -1,7 +1,10 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
+	"time"
+	"update-server-go/utils"
 )
 
 type UpdateCheckResponseDto struct {
@@ -20,7 +23,7 @@ type VersionDto struct {
 	DownloadLinks []string `json:"downloadLinks,omitempty"`
 }
 
-//TODO Implement caching
+var updateCache = utils.NewCache[UpdateCheckResponseDto](5 * time.Minute)
 
 func (server *httpServer) handleCheckUpdates(w http.ResponseWriter, r *http.Request) {
 	loader := r.PathValue("loader")
@@ -42,6 +45,14 @@ func (server *httpServer) handleCheckUpdates(w http.ResponseWriter, r *http.Requ
 		server.respondError(w, r, http.StatusNotFound, "mod not found")
 		return
 	}
+
+	cacheKey := cacheKey(modId, loader)
+	cachedValue := updateCache.Get(cacheKey)
+	if cachedValue != nil {
+		server.respondJSON(w, r, cachedValue)
+		return
+	}
+
 	mod, err := server.db.GetMod(modId)
 	if err != nil {
 		server.respondError(w, r, http.StatusInternalServerError, err.Error())
@@ -86,4 +97,10 @@ func (server *httpServer) handleCheckUpdates(w http.ResponseWriter, r *http.Requ
 	}
 
 	server.respondJSON(w, r, response)
+
+	updateCache.Set(cacheKey, response)
+}
+
+func cacheKey(modId string, loader string) string {
+	return fmt.Sprintf("%s+%s", modId, loader)
 }
