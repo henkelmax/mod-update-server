@@ -213,6 +213,17 @@ INSERT INTO updates (mod_id, publish_date, game_version, version, update_message
 	return nil
 }
 
+func (db *Database) GetAllUpdates(amount int, page int) ([]Update, error) {
+	rows, err := db.db.Query(`
+SELECT id, mod_id, publish_date, game_version, version, update_messages, release_type, tags, mod_loader FROM updates ORDER BY publish_date DESC LIMIT ? OFFSET ?;
+`, amount, page*amount)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return db.mapUpdates(rows)
+}
+
 func (db *Database) GetUpdates(modId string, amount int, page int) ([]Update, error) {
 	rows, err := db.db.Query(`
 SELECT id, mod_id, publish_date, game_version, version, update_messages, release_type, tags, mod_loader FROM updates WHERE mod_id = ? ORDER BY publish_date DESC LIMIT ? OFFSET ?;
@@ -221,7 +232,10 @@ SELECT id, mod_id, publish_date, game_version, version, update_messages, release
 		return nil, err
 	}
 	defer rows.Close()
+	return db.mapUpdates(rows)
+}
 
+func (db *Database) mapUpdates(rows *sql.Rows) ([]Update, error) {
 	var updates []Update
 
 	for rows.Next() {
@@ -233,7 +247,7 @@ SELECT id, mod_id, publish_date, game_version, version, update_messages, release
 		updates = append(updates, update)
 	}
 
-	err = rows.Err()
+	err := rows.Err()
 	if err != nil {
 		return nil, err
 	}

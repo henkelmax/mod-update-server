@@ -88,6 +88,18 @@ func (update *UpdateDto) Validate(modId string) (*database.Update, error) {
 	}, nil
 }
 
+func (server *httpServer) handleGetAllUpdates(w http.ResponseWriter, r *http.Request) {
+	amount := getQueryRange(r, "amount", 1, 128, 16)
+	page := getQueryRange(r, "page", 0, math.MaxInt, 0)
+	mods, err := server.db.GetAllUpdates(amount, page)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	server.respondJSON(w, r, mapUpdateDtos(mods))
+}
+
 func (server *httpServer) handleGetUpdates(w http.ResponseWriter, r *http.Request) {
 	modId := r.PathValue("modID")
 	if modId == "" {
