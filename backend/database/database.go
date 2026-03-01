@@ -79,6 +79,24 @@ CREATE TABLE IF NOT EXISTS api_keys (
 	return &Database{db: db}, nil
 }
 
+func (db *Database) GetTotalModCount() (int, error) {
+	var count int
+	err := db.db.QueryRow("SELECT COUNT(*) FROM mods;").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (db *Database) GetTotalUpdateCount() (int, error) {
+	var count int
+	err := db.db.QueryRow("SELECT COUNT(*) FROM updates;").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (db *Database) AddMod(mod Mod) error {
 	exec, err := db.db.Exec(`
 INSERT INTO mods (mod_id, name, description, website_url, download_url, issue_url) VALUES (?, ?, ?, ?, ?, ?)

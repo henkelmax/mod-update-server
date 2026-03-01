@@ -58,3 +58,46 @@ func (server *httpServer) handleBackup(w http.ResponseWriter, r *http.Request) {
 	}
 	server.respondJSON(w, r, backup)
 }
+
+func (server *httpServer) handleRestore(w http.ResponseWriter, r *http.Request) {
+	var backup BackupDto
+	err := server.decodeJson(r.Body, &backup)
+	if err != nil {
+		server.respondError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	count, err := server.db.GetTotalModCount()
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if count != 0 {
+		server.respondError(w, r, http.StatusBadRequest, "database is not empty")
+		return
+	}
+	updateCount, err := server.db.GetTotalUpdateCount()
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if updateCount != 0 {
+		server.respondError(w, r, http.StatusBadRequest, "database is not empty")
+		return
+	}
+
+	for _, mod := range backup.Mods {
+		err := server.db.AddMod(mapMod(mod.ModDto))
+		if err != nil {
+			server.respondError(w, r, http.StatusInternalServerError, err.Error())
+			return
+		}
+		for _, update := range mod.Updates {
+			err := server.db.AddUpdate(mapUpdate(update, mod.ModID))
+			if err != nil {
+				server.respondError(w, r, http.StatusInternalServerError, err.Error())
+				return
+			}
+		}
+	}
+	w.WriteHeader(http.StatusOK)
+}

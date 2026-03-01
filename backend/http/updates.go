@@ -58,6 +58,19 @@ func mapUpdateDtos(mods []database.Update) []UpdateWithIdAndModDto {
 	return dtos
 }
 
+func mapUpdate(update UpdateDto, modId string) database.Update {
+	return database.Update{
+		Mod:            modId,
+		PublishDate:    *update.PublishDate,
+		GameVersion:    update.GameVersion,
+		Version:        update.Version,
+		UpdateMessages: update.UpdateMessages,
+		ReleaseType:    update.ReleaseType,
+		Tags:           update.Tags,
+		ModLoader:      update.ModLoader,
+	}
+}
+
 func (update *UpdateDto) Validate(modId string) (*database.Update, error) {
 	publishDate := update.PublishDate
 	if publishDate == nil {

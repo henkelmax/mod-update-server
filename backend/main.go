@@ -24,7 +24,7 @@ func main() {
 	}(db)
 
 	// TODO Use environment variable
-	port := 8080
+	port := 8088
 	slog.Info(fmt.Sprintf("Running HTTP server on port %d", port))
 	err = http.RunHttpServer(db, port)
 	if err != nil {

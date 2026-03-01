@@ -75,6 +75,17 @@ func mapModDtos(mods []database.Mod) []ModDto {
 	return dtos
 }
 
+func mapMod(dto ModDto) database.Mod {
+	return database.Mod{
+		ModID:       dto.ModID,
+		Name:        dto.Name,
+		Description: dto.Description,
+		WebsiteURL:  dto.WebsiteURL,
+		DownloadURL: dto.DownloadURL,
+		IssueURL:    dto.IssueURL,
+	}
+}
+
 type ModWithUpdateCountDto struct {
 	ModDto
 	UpdateCount int64 `json:"updateCount"`
