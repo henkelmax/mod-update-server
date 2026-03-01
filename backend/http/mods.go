@@ -10,13 +10,31 @@ import (
 
 var modIdRegex = regexp.MustCompile(`^[a-zA-Z_]+$`)
 
-type ModDto struct {
-	ModID       string `json:"modID"`
+type ModWithoutIdDto struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	WebsiteURL  string `json:"websiteURL"`
 	DownloadURL string `json:"downloadURL"`
 	IssueURL    string `json:"issueURL"`
+}
+
+func (mod *ModWithoutIdDto) Validate(modId string) (*database.Mod, error) {
+	if strings.TrimSpace(mod.Name) == "" {
+		return nil, errors.New("mod name cannot be empty")
+	}
+	return &database.Mod{
+		ModID:       modId,
+		Name:        mod.Name,
+		Description: mod.Description,
+		WebsiteURL:  mod.WebsiteURL,
+		DownloadURL: mod.DownloadURL,
+		IssueURL:    mod.IssueURL,
+	}, nil
+}
+
+type ModDto struct {
+	ModID string `json:"modID"`
+	ModWithoutIdDto
 }
 
 func (mod *ModDto) Validate() (*database.Mod, error) {
@@ -38,12 +56,14 @@ func (mod *ModDto) Validate() (*database.Mod, error) {
 
 func mapModDto(mod database.Mod) ModDto {
 	return ModDto{
-		ModID:       mod.ModID,
-		Name:        mod.Name,
-		Description: mod.Description,
-		WebsiteURL:  mod.WebsiteURL,
-		DownloadURL: mod.DownloadURL,
-		IssueURL:    mod.IssueURL,
+		ModID: mod.ModID,
+		ModWithoutIdDto: ModWithoutIdDto{
+			Name:        mod.Name,
+			Description: mod.Description,
+			WebsiteURL:  mod.WebsiteURL,
+			DownloadURL: mod.DownloadURL,
+			IssueURL:    mod.IssueURL,
+		},
 	}
 }
 
@@ -55,26 +75,16 @@ func mapModDtos(mods []database.Mod) []ModDto {
 	return dtos
 }
 
-type ModWithoutIdDto struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	WebsiteURL  string `json:"websiteURL"`
-	DownloadURL string `json:"downloadURL"`
-	IssueURL    string `json:"issueURL"`
+type ModWithUpdateCountDto struct {
+	ModDto
+	UpdateCount int64 `json:"updateCount"`
 }
 
-func (mod *ModWithoutIdDto) Validate(modId string) (*database.Mod, error) {
-	if strings.TrimSpace(mod.Name) == "" {
-		return nil, errors.New("mod name cannot be empty")
+func mapModWithUpdateCountDto(mod database.Mod, updateCount int64) ModWithUpdateCountDto {
+	return ModWithUpdateCountDto{
+		ModDto:      mapModDto(mod),
+		UpdateCount: updateCount,
 	}
-	return &database.Mod{
-		ModID:       modId,
-		Name:        mod.Name,
-		Description: mod.Description,
-		WebsiteURL:  mod.WebsiteURL,
-		DownloadURL: mod.DownloadURL,
-		IssueURL:    mod.IssueURL,
-	}, nil
 }
 
 func (server *httpServer) handleGetMods(w http.ResponseWriter, r *http.Request) {
@@ -164,5 +174,10 @@ func (server *httpServer) handleGetMod(w http.ResponseWriter, r *http.Request) {
 		server.respondError(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
-	server.respondJSON(w, r, mapModDto(*mod))
+	count, err := server.db.GetUpdateCount(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	server.respondJSON(w, r, mapModWithUpdateCountDto(*mod, count))
 }

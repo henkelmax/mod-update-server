@@ -164,6 +164,15 @@ SELECT mod_id, name, description, website_url, download_url, issue_url FROM mods
 	return &mod, nil
 }
 
+func (db *Database) GetUpdateCount(modId string) (int64, error) {
+	var count int64
+	err := db.db.QueryRow("SELECT COUNT(*) FROM updates WHERE mod_id = ?;", modId).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (db *Database) Close() error {
 	return db.db.Close()
 }
