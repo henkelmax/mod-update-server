@@ -18,3 +18,11 @@ func (a *StringArray) Scan(value interface{}) error {
 	}
 	return json.Unmarshal(b, &a)
 }
+
+func (a StringArray) Value() (string, error) {
+	marshal, err := json.Marshal(a)
+	if err != nil {
+		return "", err
+	}
+	return string(marshal), nil
+}

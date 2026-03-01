@@ -1,0 +1,14 @@
+
+### Add a new update
+POST {{baseUrl}}/updates/test
+apikey: {{apiKey}}
+Content-Type: application/json
+
+{
+  "gameVersion": "1.18.2",
+  "version": "1.0.0+1.18.2",
+  "updateMessages": ["Test message"],
+  "releaseType": "beta",
+  "tags": ["recommended"],
+  "modLoader": "fabric"
+}

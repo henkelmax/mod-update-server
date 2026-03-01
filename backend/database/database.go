@@ -188,6 +188,31 @@ func (db *Database) DeleteMod(modId string) error {
 	return nil
 }
 
+func (db *Database) AddUpdate(update Update) error {
+	updateMessages, err := StringArray(update.UpdateMessages).Value()
+	if err != nil {
+		return err
+	}
+	tags, err := StringArray(update.Tags).Value()
+	if err != nil {
+		return err
+	}
+	exec, err := db.db.Exec(`
+INSERT INTO updates (mod_id, publish_date, game_version, version, update_messages, release_type, tags, mod_loader) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+`, update.Mod, update.PublishDate, update.GameVersion, update.Version, updateMessages, update.ReleaseType, tags, update.ModLoader)
+	if err != nil {
+		return err
+	}
+	affected, err := exec.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected != 1 {
+		return fmt.Errorf("failed to add update to database: %d rows affected", affected)
+	}
+	return nil
+}
+
 func (db *Database) Close() error {
 	return db.db.Close()
 }
