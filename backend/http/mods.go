@@ -181,3 +181,25 @@ func (server *httpServer) handleGetMod(w http.ResponseWriter, r *http.Request) {
 	}
 	server.respondJSON(w, r, mapModWithUpdateCountDto(*mod, count))
 }
+
+func (server *httpServer) handleDeleteMod(w http.ResponseWriter, r *http.Request) {
+	modId := r.PathValue("modID")
+	if modId == "" {
+		server.respondError(w, r, http.StatusBadRequest, "mod ID is required")
+	}
+	exist, err := server.db.DoesModExist(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if !exist {
+		server.respondError(w, r, http.StatusNotFound, "mod not found")
+		return
+	}
+	err = server.db.DeleteMod(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

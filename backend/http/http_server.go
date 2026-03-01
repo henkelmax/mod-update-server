@@ -62,6 +62,7 @@ func RunHttpServer(db *database.Database, port int) error {
 	mux.Handle("POST /mods/add", chainMiddlewares(http.HandlerFunc(httpServer.handleAddMod), httpServer.masterKeyMiddleware))
 	mux.Handle("POST /mods/edit/{modID}", chainMiddlewares(http.HandlerFunc(httpServer.handleEditMod), httpServer.apiKeyMiddleware))
 	mux.HandleFunc("GET /mods/{modID}", httpServer.handleGetMod)
+	mux.Handle("DELETE /mods/{modID}", chainMiddlewares(http.HandlerFunc(httpServer.handleDeleteMod), httpServer.masterKeyMiddleware))
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {

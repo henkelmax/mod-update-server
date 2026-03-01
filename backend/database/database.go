@@ -173,6 +173,21 @@ func (db *Database) GetUpdateCount(modId string) (int64, error) {
 	return count, nil
 }
 
+func (db *Database) DeleteMod(modId string) error {
+	rows, err := db.db.Exec("DELETE FROM mods WHERE mod_id = ?;", modId)
+	if err != nil {
+		return err
+	}
+	affected, err := rows.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected < 1 {
+		return fmt.Errorf("failed to delete mod from database: %d rows affected", affected)
+	}
+	return nil
+}
+
 func (db *Database) Close() error {
 	return db.db.Close()
 }

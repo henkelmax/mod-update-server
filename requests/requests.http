@@ -30,3 +30,7 @@ Content-Type: application/json
 
 ### Get a mod
 GET {{baseUrl}}/mods/test
+
+### Delete a mod
+DELETE {{baseUrl}}/mods/test
+apikey: {{apiKey}}
