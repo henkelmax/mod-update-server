@@ -3,6 +3,7 @@ GET {{baseUrl}}/mods
 
 ### Add a new mod
 POST {{baseUrl}}/mods/add
+apikey: 00000000-0000-0000-0000-000000000000
 Content-Type: application/json
 
 {

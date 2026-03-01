@@ -52,11 +52,18 @@ func RunHttpServer(db *database.Database, port int) error {
 	httpServer := httpServer{db: db}
 
 	mux.HandleFunc("GET /mods", httpServer.handleGetMods)
-	mux.HandleFunc("POST /mods/add", httpServer.handleAddMod)
+	mux.Handle("POST /mods/add", chainMiddlewares(http.HandlerFunc(httpServer.handleAddMod), httpServer.apiKeyMiddleware))
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func chainMiddlewares(handler http.Handler, middlewares ...func(http.Handler) http.Handler) http.Handler {
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		handler = middlewares[i](handler)
+	}
+	return handler
 }
