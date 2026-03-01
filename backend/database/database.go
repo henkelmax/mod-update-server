@@ -252,6 +252,31 @@ SELECT id, mod_id, publish_date, game_version, version, update_messages, release
 	return &update, nil
 }
 
+func (db *Database) DoesUpdateExist(id int64) (bool, error) {
+	var exists bool
+	err := db.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM updates WHERE id = ?)`, id).Scan(&exists)
+	if err != nil {
+		return false, err
+
+	}
+	return exists, nil
+}
+
+func (db *Database) DeleteUpdate(modId string, updateId int64) error {
+	rows, err := db.db.Exec("DELETE FROM updates WHERE id = ? AND mod_id = ?;", updateId, modId)
+	if err != nil {
+		return err
+	}
+	affected, err := rows.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected < 1 {
+		return fmt.Errorf("failed to delete update from database: %d rows affected", affected)
+	}
+	return nil
+}
+
 func (db *Database) Close() error {
 	return db.db.Close()
 }

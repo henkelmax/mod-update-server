@@ -21,3 +21,7 @@ Content-Type: application/json
   "tags": ["recommended"],
   "modLoader": "fabric"
 }
+
+### Delete an update
+DELETE {{baseUrl}}/updates/test/5
+apikey: {{apiKey}}

@@ -126,7 +126,16 @@ func (server *httpServer) handleGetUpdate(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if !exist {
-		server.respondError(w, r, http.StatusNotFound, "mod does not exist")
+		server.respondError(w, r, http.StatusNotFound, "mod not found")
+		return
+	}
+	exist, err = server.db.DoesUpdateExist(updateId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, "failed to check if update exists")
+		return
+	}
+	if !exist {
+		server.respondError(w, r, http.StatusNotFound, "update not found")
 		return
 	}
 
@@ -164,7 +173,7 @@ func (server *httpServer) handleAddUpdate(w http.ResponseWriter, r *http.Request
 	}
 
 	if !exists {
-		server.respondError(w, r, http.StatusConflict, "mod does not exist")
+		server.respondError(w, r, http.StatusConflict, "mod not found")
 		return
 	}
 
@@ -174,6 +183,48 @@ func (server *httpServer) handleAddUpdate(w http.ResponseWriter, r *http.Request
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (server *httpServer) handleDeleteUpdate(w http.ResponseWriter, r *http.Request) {
+	modId := r.PathValue("modID")
+	if modId == "" {
+		server.respondError(w, r, http.StatusBadRequest, "mod ID is required")
+		return
+	}
+	updateIdStr := r.PathValue("updateID")
+	if updateIdStr == "" {
+		server.respondError(w, r, http.StatusBadRequest, "update ID is required")
+		return
+	}
+	updateId, err := strconv.ParseInt(updateIdStr, 10, 64)
+	if err != nil {
+		server.respondError(w, r, http.StatusBadRequest, "invalid update ID")
+		return
+	}
+	exist, err := server.db.DoesModExist(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, "failed to check if mod exists")
+		return
+	}
+	if !exist {
+		server.respondError(w, r, http.StatusNotFound, "mod not found")
+		return
+	}
+	exist, err = server.db.DoesUpdateExist(updateId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, "failed to check if update exists")
+		return
+	}
+	if !exist {
+		server.respondError(w, r, http.StatusNotFound, "update not found")
+		return
+	}
+	err = server.db.DeleteUpdate(modId, updateId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func getQueryRange(r *http.Request, param string, min int, max int, def int) int {
