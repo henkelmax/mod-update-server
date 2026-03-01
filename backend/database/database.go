@@ -153,6 +153,17 @@ UPDATE mods SET name = ?, description = ?, website_url = ?, download_url = ?, is
 	return nil
 }
 
+func (db *Database) GetMod(modId string) (*Mod, error) {
+	var mod Mod
+	err := db.db.QueryRow(`
+SELECT mod_id, name, description, website_url, download_url, issue_url FROM mods WHERE mod_id = ?;
+`, modId).Scan(&mod.ModID, &mod.Name, &mod.Description, &mod.WebsiteURL, &mod.DownloadURL, &mod.IssueURL)
+	if err != nil {
+		return nil, err
+	}
+	return &mod, nil
+}
+
 func (db *Database) Close() error {
 	return db.db.Close()
 }

@@ -27,3 +27,6 @@ Content-Type: application/json
   "downloadURL": "",
   "issueURL": ""
 }
+
+### Get a mod
+GET {{baseUrl}}/mods/test

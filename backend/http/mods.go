@@ -148,3 +148,17 @@ func (server *httpServer) handleEditMod(w http.ResponseWriter, r *http.Request) 
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func (server *httpServer) handleGetMod(w http.ResponseWriter, r *http.Request) {
+	modId := r.PathValue("modID")
+	if modId == "" {
+		server.respondError(w, r, http.StatusBadRequest, "mod ID is required")
+		return
+	}
+	mod, err := server.db.GetMod(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	server.respondJSON(w, r, mapModDto(*mod))
+}
