@@ -127,6 +127,10 @@ func (server *httpServer) handleEditMod(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	modId := r.PathValue("modID")
+	if modId == "" {
+		server.respondError(w, r, http.StatusBadRequest, "mod ID is required")
+		return
+	}
 	exists, err := server.db.DoesModExist(modId)
 	if err != nil {
 		server.respondError(w, r, http.StatusInternalServerError, "failed to check if mod exists")
