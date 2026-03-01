@@ -29,6 +29,11 @@ type Update struct {
 	ModLoader      string
 }
 
+type ApiKey struct {
+	ApiKey string
+	Mods   StringArray
+}
+
 type Database struct {
 	db *sql.DB
 }
@@ -312,6 +317,58 @@ UPDATE updates SET publish_date = ?, game_version = ?, version = ?, update_messa
 	}
 	if affected != 1 {
 		return fmt.Errorf("failed to update update: %d rows affected", affected)
+	}
+	return nil
+}
+
+func (db *Database) GetApiKeys() ([]ApiKey, error) {
+	rows, err := db.db.Query("SELECT api_key, mods FROM api_keys;")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var apiKeys []ApiKey
+	for rows.Next() {
+		var apiKey ApiKey
+		err := rows.Scan(&apiKey.ApiKey, &apiKey.Mods)
+		if err != nil {
+			return nil, err
+		}
+		apiKeys = append(apiKeys, apiKey)
+	}
+	return apiKeys, nil
+}
+
+func (db *Database) AddApiKey(apiKey ApiKey) error {
+	mods, err := apiKey.Mods.Value()
+	if err != nil {
+		return err
+	}
+	exec, err := db.db.Exec("INSERT INTO api_keys (api_key, mods) VALUES (?, ?);", apiKey.ApiKey, mods)
+	if err != nil {
+		return err
+	}
+	affected, err := exec.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected != 1 {
+		return fmt.Errorf("failed to add api key: %d rows affected", affected)
+	}
+	return nil
+}
+
+func (db *Database) DeleteApiKey(apiKey string) error {
+	rows, err := db.db.Exec("DELETE FROM api_keys WHERE api_key = ?;", apiKey)
+	if err != nil {
+		return err
+	}
+	affected, err := rows.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected < 1 {
+		return fmt.Errorf("failed to delete api key from database: %d rows affected", affected)
 	}
 	return nil
 }

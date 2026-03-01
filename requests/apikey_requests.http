@@ -1,0 +1,17 @@
+### Get all api keys
+GET {{baseUrl}}/apikeys
+apikey: {{apiKey}}
+
+### Add an api key
+POST {{baseUrl}}/apikeys/add
+apikey: {{apiKey}}
+Content-Type: application/json
+
+[
+  "test",
+  "test_mod"
+]
+
+### Remove an api key
+DELETE {{baseUrl}}/apikeys/39cbe7ab-d2fc-4b44-902f-2f8e76c93ed9
+apikey: {{apiKey}}
