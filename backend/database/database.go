@@ -189,11 +189,11 @@ func (db *Database) DeleteMod(modId string) error {
 }
 
 func (db *Database) AddUpdate(update Update) error {
-	updateMessages, err := StringArray(update.UpdateMessages).Value()
+	updateMessages, err := update.UpdateMessages.Value()
 	if err != nil {
 		return err
 	}
-	tags, err := StringArray(update.Tags).Value()
+	tags, err := update.Tags.Value()
 	if err != nil {
 		return err
 	}
