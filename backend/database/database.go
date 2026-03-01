@@ -148,7 +148,7 @@ UPDATE mods SET name = ?, description = ?, website_url = ?, download_url = ?, is
 		return err
 	}
 	if affected != 1 {
-		return fmt.Errorf("failed to add mod to database: %d rows affected", affected)
+		return fmt.Errorf("failed to update mod: %d rows affected", affected)
 	}
 	return nil
 }
@@ -273,6 +273,31 @@ func (db *Database) DeleteUpdate(modId string, updateId int64) error {
 	}
 	if affected < 1 {
 		return fmt.Errorf("failed to delete update from database: %d rows affected", affected)
+	}
+	return nil
+}
+
+func (db *Database) UpdateUpdate(update Update) error {
+	updateMessages, err := update.UpdateMessages.Value()
+	if err != nil {
+		return err
+	}
+	tags, err := update.Tags.Value()
+	if err != nil {
+		return err
+	}
+	exec, err := db.db.Exec(`
+UPDATE updates SET publish_date = ?, game_version = ?, version = ?, update_messages = ?, release_type = ?, tags = ?, mod_loader = ? WHERE id = ? and mod_id = ?;
+`, update.PublishDate, update.GameVersion, update.Version, updateMessages, update.ReleaseType, tags, update.ModLoader, update.ID, update.Mod)
+	if err != nil {
+		return err
+	}
+	affected, err := exec.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected != 1 {
+		return fmt.Errorf("failed to update update: %d rows affected", affected)
 	}
 	return nil
 }

@@ -6,7 +6,7 @@ GET {{baseUrl}}/updates/test
 GET {{baseUrl}}/updates/test?amount=1&page=0
 
 ### Get an update
-GET {{baseUrl}}/updates/test/1
+GET {{baseUrl}}/updates/test/6
 
 ### Add a new update
 POST {{baseUrl}}/updates/test
@@ -25,3 +25,17 @@ Content-Type: application/json
 ### Delete an update
 DELETE {{baseUrl}}/updates/test/5
 apikey: {{apiKey}}
+
+### Edit an update
+POST {{baseUrl}}/updates/test/6
+apikey: {{apiKey}}
+Content-Type: application/json
+
+{
+  "gameVersion": "1.18.2",
+  "version": "2.0.0+1.18.2",
+  "updateMessages": ["Test message"],
+  "releaseType": "beta",
+  "tags": [],
+  "modLoader": "fabric"
+}

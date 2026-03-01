@@ -44,6 +44,7 @@ func mapUpdateDto(update database.Update) UpdateWithIdAndModDto {
 				UpdateMessages: update.UpdateMessages,
 				ReleaseType:    update.ReleaseType,
 				Tags:           update.Tags,
+				ModLoader:      update.ModLoader,
 			},
 		},
 	}
@@ -220,6 +221,60 @@ func (server *httpServer) handleDeleteUpdate(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	err = server.db.DeleteUpdate(modId, updateId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func (server *httpServer) handleEditUpdate(w http.ResponseWriter, r *http.Request) {
+	var update UpdateDto
+	err := server.decodeJson(r.Body, &update)
+	if err != nil {
+		server.respondError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	modId := r.PathValue("modID")
+	if modId == "" {
+		server.respondError(w, r, http.StatusBadRequest, "mod ID is required")
+		return
+	}
+	updateIdStr := r.PathValue("updateID")
+	if updateIdStr == "" {
+		server.respondError(w, r, http.StatusBadRequest, "update ID is required")
+		return
+	}
+	updateId, err := strconv.ParseInt(updateIdStr, 10, 64)
+	if err != nil {
+		server.respondError(w, r, http.StatusBadRequest, "invalid update ID")
+		return
+	}
+	exist, err := server.db.DoesModExist(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, "failed to check if mod exists")
+		return
+	}
+	if !exist {
+		server.respondError(w, r, http.StatusNotFound, "mod not found")
+		return
+	}
+	exist, err = server.db.DoesUpdateExist(updateId)
+	if err != nil {
+		server.respondError(w, r, http.StatusInternalServerError, "failed to check if update exists")
+		return
+	}
+	if !exist {
+		server.respondError(w, r, http.StatusNotFound, "update not found")
+		return
+	}
+	updateDbObject, err := update.Validate(modId)
+	if err != nil {
+		server.respondError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	updateDbObject.ID = updateId
+	err = server.db.UpdateUpdate(*updateDbObject)
 	if err != nil {
 		server.respondError(w, r, http.StatusInternalServerError, err.Error())
 		return
