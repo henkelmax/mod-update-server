@@ -241,6 +241,17 @@ SELECT id, mod_id, publish_date, game_version, version, update_messages, release
 	return updates, nil
 }
 
+func (db *Database) GetUpdate(modId string, updateId int64) (*Update, error) {
+	var update Update
+	err := db.db.QueryRow(`
+SELECT id, mod_id, publish_date, game_version, version, update_messages, release_type, tags, mod_loader FROM updates WHERE id = ? AND mod_id = ?;
+`, updateId, modId).Scan(&update.ID, &update.Mod, &update.PublishDate, &update.GameVersion, &update.Version, &update.UpdateMessages, &update.ReleaseType, &update.Tags, &update.ModLoader)
+	if err != nil {
+		return nil, err
+	}
+	return &update, nil
+}
+
 func (db *Database) Close() error {
 	return db.db.Close()
 }
