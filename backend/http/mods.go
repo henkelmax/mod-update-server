@@ -1,7 +1,6 @@
 package http
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"regexp"
@@ -90,7 +89,7 @@ func (server *httpServer) handleGetMods(w http.ResponseWriter, r *http.Request) 
 
 func (server *httpServer) handleAddMod(w http.ResponseWriter, r *http.Request) {
 	var mod ModDto
-	err := json.NewDecoder(r.Body).Decode(&mod)
+	err := server.decodeJson(r.Body, &mod)
 	if err != nil {
 		server.respondError(w, r, http.StatusBadRequest, err.Error())
 		return
@@ -122,7 +121,7 @@ func (server *httpServer) handleAddMod(w http.ResponseWriter, r *http.Request) {
 
 func (server *httpServer) handleEditMod(w http.ResponseWriter, r *http.Request) {
 	var mod ModWithoutIdDto
-	err := json.NewDecoder(r.Body).Decode(&mod)
+	err := server.decodeJson(r.Body, &mod)
 	if err != nil {
 		server.respondError(w, r, http.StatusBadRequest, err.Error())
 		return

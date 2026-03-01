@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"update-server-go/database"
 )
@@ -36,6 +37,12 @@ func (server *httpServer) respondError(w http.ResponseWriter, r *http.Request, s
 		return
 	}
 	w.WriteHeader(status)
+}
+
+func (server *httpServer) decodeJson(reader io.Reader, value any) error {
+	decoder := json.NewDecoder(reader)
+	decoder.DisallowUnknownFields()
+	return decoder.Decode(&value)
 }
 
 type ProblemDetails struct {
