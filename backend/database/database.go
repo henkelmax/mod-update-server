@@ -240,6 +240,62 @@ SELECT id, mod_id, publish_date, game_version, version, update_messages, release
 	return db.mapUpdates(rows)
 }
 
+func (db *Database) GetRecommendedUpdates(modId string, modLoader string) ([]Update, error) {
+	rows, err := db.db.Query(`
+WITH latest_updates AS (
+    SELECT 
+        updates.*, 
+        ROW_NUMBER() OVER (
+            PARTITION BY updates.game_version 
+            ORDER BY updates.publish_date DESC
+        ) AS row_num 
+    FROM updates
+    WHERE updates.mod_id = ? 
+      AND updates.mod_loader = ? 
+      AND json_valid(updates.tags) = 1
+      AND EXISTS (
+          SELECT 1 
+          FROM json_each(updates.tags) 
+          WHERE value = 'recommended'
+      )
+)
+SELECT id, mod_id, publish_date, game_version, version, update_messages, release_type, tags, mod_loader
+FROM latest_updates 
+WHERE row_num = 1 
+ORDER BY publish_date DESC;
+`, modId, modLoader)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return db.mapUpdates(rows)
+}
+
+func (db *Database) GetLatestUpdates(modId string, modLoader string) ([]Update, error) {
+	rows, err := db.db.Query(`
+WITH latest_updates AS (
+    SELECT
+        updates.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY updates.game_version
+            ORDER BY updates.publish_date DESC
+        ) AS row_num
+    FROM updates
+    WHERE updates.mod_id = ?
+      AND updates.mod_loader = ?
+)
+SELECT id, mod_id, publish_date, game_version, version, update_messages, release_type, tags, mod_loader
+FROM latest_updates
+WHERE row_num = 1
+ORDER BY publish_date DESC;
+`, modId, modLoader)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return db.mapUpdates(rows)
+}
+
 func (db *Database) mapUpdates(rows *sql.Rows) ([]Update, error) {
 	var updates []Update
 

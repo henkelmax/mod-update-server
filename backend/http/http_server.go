@@ -75,6 +75,9 @@ func RunHttpServer(db *database.Database, port int) error {
 	mux.Handle("POST /apikeys/add", chainMiddlewares(http.HandlerFunc(httpServer.handleAddApiKey), httpServer.masterKeyMiddleware))
 	mux.Handle("DELETE /apikeys/{apiKey}", chainMiddlewares(http.HandlerFunc(httpServer.handleDeleteApiKey), httpServer.masterKeyMiddleware))
 
+	mux.HandleFunc("GET /forge/{modID}", httpServer.handleGetForgeUpdates)
+	mux.HandleFunc("GET /neoforge/{modID}", httpServer.handleGetNeoForgeUpdates)
+
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
 		return err

@@ -1,0 +1,5 @@
+### Get forge updates
+GET {{baseUrl}}/forge/test
+
+### Get neoforge updates
+GET {{baseUrl}}/neoforge/test
