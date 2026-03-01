@@ -78,6 +78,8 @@ func RunHttpServer(db *database.Database, port int) error {
 	mux.HandleFunc("GET /forge/{modID}", httpServer.handleGetForgeUpdates)
 	mux.HandleFunc("GET /neoforge/{modID}", httpServer.handleGetNeoForgeUpdates)
 
+	mux.HandleFunc("GET /check/{loader}/{modID}", httpServer.handleCheckUpdates)
+
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
 		return err
