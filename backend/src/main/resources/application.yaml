@@ -1,9 +1,3 @@
-server:
-  error:
-    path: /error
-    whitelabel:
-      enabled: false
-
 management:
   server:
     port: 8070
@@ -13,6 +7,11 @@ management:
         include: [ "prometheus" ]
 
 spring:
+  web:
+    error:
+      path: /error
+      whitelabel:
+        enabled: false
   jpa:
     hibernate:
       ddl-auto: update
