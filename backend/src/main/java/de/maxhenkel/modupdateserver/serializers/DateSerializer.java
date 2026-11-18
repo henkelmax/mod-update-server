@@ -1,10 +1,9 @@
 package de.maxhenkel.modupdateserver.serializers;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -22,7 +21,7 @@ public class DateSerializer extends StdSerializer<Date> {
     }
 
     @Override
-    public void serialize(Date value, JsonGenerator g, SerializerProvider provider) throws IOException {
+    public void serialize(Date value, JsonGenerator g, SerializationContext context) {
         g.writeString(ISO_UTC_FORMAT.format(value));
     }
 

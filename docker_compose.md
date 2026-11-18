@@ -38,7 +38,7 @@ services:
       - "traefik.http.routers.updateHttps.tls=true"
       - "traefik.http.services.update_service.loadbalancer.server.port=8088"
   update-postgres:
-    image: "postgres:16"
+    image: "postgres:17"
     restart: "always"
     container_name: "update-postgres"
     environment:

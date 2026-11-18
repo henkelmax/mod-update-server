@@ -96,7 +96,7 @@ See [this](docker_compose.md).
 
 ### Prerequisites
 
-- [Java 17](https://www.oracle.com/java/technologies/downloads/#java17)
+- [Java 25](https://www.oracle.com/java/technologies/downloads/#java25)
 - [Node.js](https://nodejs.org/)
 - [Yarn](https://yarnpkg.com/)
 

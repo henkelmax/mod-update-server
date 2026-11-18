@@ -9,7 +9,7 @@ COPY frontend .
 
 RUN yarn build
 
-FROM openjdk:17-jdk-alpine
+FROM eclipse-temurin:25-jdk-alpine
 
 COPY --from=frontend-builder dist /var/www/
 COPY . .
